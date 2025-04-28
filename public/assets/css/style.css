@@ -1,0 +1,654 @@
+:root {
+    --primary-red: #E61846;
+    --light-bg: #f8f9fa;
+    --text-dark: #212529;
+}
+
+/* ---------------------------------------- Body ---------------------------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    padding-top: 110px;
+}
+
+/* ---------------------------------------- Custom navbar* ------------------------ */
+.custom-navbar {
+    background-color: var(--primary-red);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1030;
+  }
+
+  .custom-navbar .container-fluid {
+    position: relative;
+  }
+  
+  .custom-navbar .navbar-brand {
+    color: white !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+  
+  .custom-navbar .navbar-brand img {
+    margin-left: 2rem;
+    border-radius: 100px;
+    max-height: 100px;
+  }
+  
+  .custom-navbar .nav-link {
+    color: white !important;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .custom-navbar .nav-link:hover {
+    color: #f8f9fa !important;
+  }
+
+  .custom-navbar form input {
+    min-width: 180px;
+    max-width: 220px;
+  }
+
+  .custom-navbar form button img {
+    filter: brightness(100);
+  }
+  
+  /* ------------------------------ Buscador ----------------------------- */
+  .search-input {
+    background-color: #ff4d6d; /* tono más claro del rojo */
+    border-color: transparent;
+    color: white;
+    transition: all 0.3s ease;
+    width: 170px;
+  }
+
+  .search-input:focus {
+    background-color: white;
+    color: #212529;
+    width: 380px;
+  }
+
+  .search-input::placeholder {
+    color: white;
+    opacity: 1;
+  }
+
+  .search-wrapper {
+    position: absolute;
+    z-index: 1050;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 2rem !important;
+    display: flex; /* Esto es lo que alinea input y botón lado a lado */
+    align-items: center; /* Alineación vertical */
+    gap: 0.5rem; /* Espacio entre input y botón */
+  }
+  
+  .search-btn img {
+    height: 22px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(1);
+  }
+
+  .search-btn:hover img {
+    transform: scale(1.2) rotate(13deg);
+    filter: brightness(1.3);
+  }
+
+  #resultados {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    top: 100%; /* esto ya está bien */
+    left: 0;
+    width: 100%; /* para que coincida con el ancho del input */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #resultados li {
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  #resultados li:hover {
+    background-color: #eee;
+  }
+  
+  /* --------------------------------------------- Offcanvas ------------------------------------ */
+.navbar-toggler {
+  border: 2px solid white;
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5);
+}
+
+.navbar-toggler-icon {
+  filter: brightness(100);
+}
+
+.custom-offcanvas {
+  background-color: #AE3052;
+  color: white;
+}
+/* ----------------------------------------- Carrusel Index ------------------------------------- */
+.carousel-inner img {
+    max-height: 500px;
+    object-fit: cover;
+}
+
+/* ----- Borde para contenedores, modo debug, no final
+.debug-border {
+    border: 2px dashed red;
+}*/
+
+/* ----------------------------------------- Contenedores General ------------------ */
+section.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* -------------------------------------- Filtros de búsqueda ----------------------------------- */
+.filtros-sidebar {
+  background-color: transparent;
+  border-right: 2px solid #ccc;
+  padding: 1rem;
+  width: 250px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.filtros-sidebar h5 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--primary-red);
+}
+
+.filtro-seccion {
+  margin-bottom: 1.5rem;
+}
+
+.filtro-seccion h6 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem; /* Espaciado extra para separar secciones */
+  color: #212529;
+}
+
+.lista-filtros {
+  list-style: none;
+  padding-left: 0;
+}
+
+.lista-filtros li {
+  margin-bottom: 0.4rem;
+}
+
+.lista-filtros label {
+  margin-left: 0.5rem;
+  font-weight: normal;
+  font-size: 0.9rem;
+}
+
+.lista-filtros input[type="checkbox"] {
+  accent-color: var(--primary-red);
+}
+
+/* -------------- Estilos nuevos para los SELECTS de filtros ------------- */
+.filtros-sidebar .form-select {
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  box-shadow: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filtros-sidebar .form-select:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* ----------------- Botón de aplicar filtros ----------------- */
+.filtros-sidebar .btn-danger {
+  background-color: var(--primary-red);
+  border-color: var(--primary-red);
+  font-weight: bold;
+}
+
+.filtros-sidebar .btn-danger:hover {
+  background-color: #b31030;
+  border-color: #b31030;
+}
+
+/*--------------------  Botón de filtros en móviles  --------------- */
+.btn-filtros-mobile {
+  background-color: var(--primary-red);
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-filtros-mobile:hover {
+  background-color: #c4123c;
+}
+
+
+
+/* ----------------------------------------- Tarjetas de productos ------------------------------ */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+  height: 280px; /* O el valor que prefieras */
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.product-card .card-img-top {
+  transform: none !important;
+  transition: none !important;
+}
+
+.product-title {
+  color: #212529;
+  font-weight: 600;
+  font-weight: bold;
+  text-align: center;
+}
+
+.product-title a {
+  transition: color 0.3s ease;
+}
+.product-title a:hover {
+  color: #D9184B !important;
+}
+
+.product-title:active {
+  color:#D9184B;
+}
+
+.product-price {
+  font-weight: bold;
+  color: #D9184B;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.btn-vermas{
+  background-color: transparent;
+  color: #D9184B;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+  font-weight: 500;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-vermas:hover, .btn-vermas:focus {
+  background-color: #D9184B;
+  color: white;
+}
+
+/* ------------------ Botón especial para mensajes de no resultados ------------- */
+.btn-noresult {
+  background-color: var(--primary-red);
+  max-width: 250px;
+  color: white;
+  border: none;
+}
+
+.btn-noresult:hover {
+  background-color: #D9184B; /* Un tono rojo más oscuro al pasar el mouse */
+  color: white;
+}
+
+.btn-noresult:focus,
+.btn-noresult:active {
+  background-color: #C0153F; /* Otro tono rojo más fuerte al presionar */
+  color: white;
+  box-shadow: none; /* Opcional, para que no tenga bordes raros de focus */
+}
+
+/* ----------------------------------------- Detalles de Productos ------------------------------ */
+/* -------------- Carrusel de Imagenes ----------- */
+.carousel-container {
+  border: 2px solid #e5e5e5;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+  max-width: 400px; /* o prueba 380px, 360px, según veas cómo queda */
+  margin: 0 auto;
+  margin-bottom: 2rem;
+}
+
+.custom-carousel {
+  max-width: 100%;
+  width: 100%;
+}
+
+.custom-carousel img {
+  margin-top: 0.6rem;
+  height: 500px;
+  object-fit: contain;
+  width: 100%;
+  /*border-radius: 8px;*/
+}
+/* -------------- Miniaturas ---------------------- */
+.thumb-img {
+  height: 80px;
+  width: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease, transform 0.2s ease;
+}
+
+.thumb-img.active-thumb {
+  border: 2px solid #d9184b;
+  transform: scale(1.05);
+}
+
+.carousel-thumbnails {
+  margin-top: 0.6rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+/* ----------------- Link en Detalles (arriba de botones de chat) ---------- */
+.link-terminos-container {
+  text-align: left;
+  margin-bottom: 1rem; /* Separación del resto */
+}
+
+.link-terminos {
+  color: var(--primary-red);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.link-terminos:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------- Botones dentro de detalles del producto: Chats --------------- */
+.icon-btn {
+  width: 20px;
+  height: 20px;
+}
+/* -------------- Botón para WhatsApp ------------*/
+.btn-whatsapp {
+  background-color: #E61846;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #c4123c;
+  color: white;
+}
+
+/* --------------- Botón Messenger -------------- */
+.btn-messenger {
+  background-color: #0078FF;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+.btn-messenger:hover {
+  background-color: #0066cc;
+  color: white;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+}
+.btn-primary:hover {
+    background-color: #D9184B;
+    border-color: #AE3052;
+}
+
+/* ---------------------------------- Estilos para la página de Pedidos Especiales ------------------------------ */
+.pedidos-titulo {
+  color: #0056d2;
+  font-weight: bold;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.pedidos-texto {
+  color: #333;
+  font-size: 1.1rem;
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+  text-align: center;
+}
+
+.pasos-titulo {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.lista-pasos {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.lista-pasos li {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.lista-pasos li::before {
+  margin-right: 0.5rem;
+}
+
+.pedidos-nota {
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+/* ----------------------------------------- Footer -------------------------------------- */
+footer {
+    background-color: var(--primary-red);
+    color: white;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Iconos Redes Sociales*/
+.social-icons a img {
+    width: 30px;
+    height: 30px;
+    margin: 10px 10px;
+    transition: transform 0.3s, filter 0.3s;
+}
+
+.social-icons a:hover img {
+    transform: scale(1.2);
+    filter: brightness(1.2) contrast(1.2);
+}
+
+.link-footer {
+  color: white;
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------- ERROR 404 ---------------------------------------- */
+.error-container {
+  text-align: center;
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  min-height: 70vh; /* mantiene el contenido separado del footer */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-error {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem; /* agrega espacio antes del footer */
+  padding: 0.6rem 1.2rem;
+}
+
+.error-container img{
+  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ------------------------------------ Responsive ---------------------------------- */
+
+/* Pantallas muy pequeñas (por ejemplo, iPhone SE) */
+@media (max-width: 375px) {
+  /* Ajustes para móviles muy pequeños */
+}
+
+/* Pantallas móviles promedio (iPhone 13, Galaxy S21, etc.) */
+@media (max-width: 425px) {
+  /* Ajustes para móviles normales */
+  .navbar-brand img {
+    margin-left: 0.1rem;
+    max-height: 60px; /* Reducimos un poco la altura del logo */
+  }
+
+  .navbar-toggler {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    border: 2px solid white;
+  }
+
+  .navbar-toggler-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .search-btn img {
+    height: 24px;
+    margin-left: 0.8rem;
+  }
+
+  .search-wrapper {
+    right: 3rem; /* Ajustamos el input/botón de búsqueda */
+  }
+}
+
+/* Phablets y móviles grandes (iPhone Plus, Galaxy Note, etc.) */
+@media (max-width: 600px) {
+  /* Ajustes para móviles más grandes o phablets */
+}
+
+/* Tablets (iPads, Galaxy Tab, etc.) */
+@media (max-width: 768px) {
+  .carousel-inner img {
+      max-height: 300px;
+  }
+
+  .navbar-brand {
+      font-size: 1.25rem;
+  }
+
+  .custom-navbar .nav-link {
+      font-size: 1rem;
+  }
+
+  .custom-navbar .navbar-nav {
+      flex-direction: column !important;
+      gap: 1rem;
+  }
+
+  .custom-navbar .navbar-nav{
+    display: none !important;
+  }
+
+  .search-wrapper .search-input {
+    display: none;
+  }
+
+  .search-wrapper {
+    right: 4rem;
+  }
+
+  .search-btn img {
+    height: 26px;
+  }
+
+  #mobileInputBusqueda:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem #AE3052;
+  }
+
+  #mobile-search-container {
+    background-color: white;
+    position: absolute;
+    top: 100px;
+    left: 0;
+    width: 100%;
+    z-index: 1060;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  #mobile-search-container input {
+    background-color: white;
+    color: #212529;
+  }
+
+  #mobileResultados {
+    z-index: 1050;
+    position: relative;
+  }
+
+  .btn-whatsapp, .btn-messenger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .menu-toggle {
+    display: inline-block !important;
+  }
+  
+  .filtros-sidebar:not(.desde-offcanvas) {
+    display: none;
+  }
+}
+
+/* Laptops pequeñas (Chromebooks, MacBook Air) */
+@media (max-width: 1024px) {
+  /* Ajustes para laptops más pequeñas */
+}
+
+/* Laptops grandes o monitores */
+@media (max-width: 1440px) {
+  /* Ajustes finos para pantallas amplias */
+}

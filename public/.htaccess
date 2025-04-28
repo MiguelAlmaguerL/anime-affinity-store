@@ -1,0 +1,5 @@
+# Activa la reescritura de URLs
+RewriteEngine On
+
+# Si no encuentra la página solicitada, redirige al error 404 personalizado
+ErrorDocument 404 /404.php

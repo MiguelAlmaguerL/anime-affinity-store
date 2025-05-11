@@ -12,6 +12,13 @@
 <!-- Barra de navegación del sitio -->
 <?php include('navbar.php'); ?>
 
+<!-- Obtener productos recientes -->
+<?php
+require __DIR__ . '/../includes/firebase_fetch.php';
+$recientes = obtenerProductosRecientes();
+$preventas = obtenerProductosPreventa();
+?>
+
 <!-- Carrusel fuera de container -->
 <div id="carouselExampleIndicators" class="carousel slide debug-border" data-bs-ride="carousel">
   <div class="carousel-indicators">
@@ -34,75 +41,38 @@
 
 <!-- Sección de Productos Recientes -->
 <section class="container mb-5">
-  <h2 class="text-center mb-4">Productos Recientes</h2>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-
-    <!-- Tarjeta de producto ejemplo -->
-    <div class="col">
-      <div class="card h-100 product-card">
-        <img src="assets/img/ejemplo1.png" class="card-img-top" alt="Producto 1">
-        <div class="card-body">
-          <h5 class="product-title text-center">Zoro Roronoa</h5>
-          <p class="product-price text-center">$1,199.00 MXN</p>
+    <?php foreach ($recientes as $producto): ?>
+      <div class="col">
+        <div class="card h-100 product-card">
+          <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
+          <div class="card-body">
+            <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
+            <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Más tarjetas de productos recientes -->
-    <div class="col">
-      <div class="card h-100 product-card">
-        <img src="assets/img/ejemplo2.jpg" class="card-img-top" alt="Producto 2">
-        <div class="card-body">
-          <h5 class="product-title text-center">Gojo Satoru</h5>
-          <p class="product-price text-center">$6,199.00 MXN</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card h-100 product-card">
-        <img src="assets/img/ejemplo3.jpg" class="card-img-top" alt="Producto 3">
-        <div class="card-body">
-          <h5 class="product-title text-center">Tanjiro Kamado</h5>
-          <p class="product-price text-center">$2,499.00 MXN</p>
-        </div>
-      </div>
-    </div>
-
+    <?php endforeach; ?>
   </div>
 </section>
-
 
 <!-- Sección de Productos en Preventa -->
 <section class="container mb-5">
   <h2 class="text-center mb-4">Productos en Preventa</h2>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-
-    <!-- Tarjeta de preventa ejemplo -->
-    <div class="col">
-      <div class="card h-100 product-card">
-        <img src="assets/img/ejemplo2.jpg" class="card-img-top" alt="Preventa 1">
-        <div class="card-body">
-          <h5 class="product-title text-center">Gojo Satoru (Preventa)</h5>
-          <p class="product-price text-center">$6,999.00 MXN</p>
+    <?php foreach ($preventas as $producto): ?>
+      <div class="col">
+        <div class="card h-100 product-card">
+          <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
+          <div class="card-body">
+            <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
+            <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Más tarjetas de preventa -->
-    <div class="col">
-      <div class="card h-100 product-card">
-        <img src="assets/img/ejemplo1.png" class="card-img-top" alt="Preventa 2">
-        <div class="card-body">
-          <h5 class="product-title text-center">Luffy Gear 5 (Preventa)</h5>
-          <p class="product-price text-center">$8,499.00 MXN</p>
-        </div>
-      </div>
-    </div>
-
+    <?php endforeach; ?>
   </div>
 </section>
-
 
 <!-- Footer del sitio -->
 <?php include('footer.php'); ?>

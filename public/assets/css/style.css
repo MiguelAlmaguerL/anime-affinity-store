@@ -254,8 +254,9 @@ section.container {
 }
 
 .card-img-top {
-  height: 280px; /* O el valor que prefieras */
+  height: 340px; /* O el valor que prefieras */
   object-fit: cover;
+  object-position: center;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
 }

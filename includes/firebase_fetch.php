@@ -44,7 +44,7 @@ function getAccessToken($keyFilePath) {
     return $data['access_token'];
 }
 
-function obtenerProductosPorEstado($accessToken, $projectId, $estado, $limite = 4) {
+/*function obtenerProductosPorEstado($accessToken, $projectId, $estado, $limite = 4) {
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
 
     $query = [
@@ -76,10 +76,10 @@ function obtenerProductosPorEstado($accessToken, $projectId, $estado, $limite = 
     $context = stream_context_create($options);
     $response = file_get_contents($url, false, $context);
     return json_decode($response, true);
-}
+}*/
 
 // Función para productos recientes (estado: Disponible o todos)
-function obtenerProductosRecientes($limite = 4) {
+function obtenerProductosRecientes($limite = 8) {
     global $accessToken, $projectId;
 
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
@@ -133,8 +133,8 @@ function obtenerProductosRecientes($limite = 4) {
     return $productos;
 }
 
-// ✅ NUEVA FUNCIÓN: Productos en Preventa
-function obtenerProductosPreventa($limite = 4) {
+//NUEVA FUNCIÓN: Productos en Preventa
+/*function obtenerProductosPreventa($limite = 4) {
     global $accessToken, $projectId;
 
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
@@ -193,4 +193,4 @@ function obtenerProductosPreventa($limite = 4) {
     }
 
     return $productos;
-}
+}*/

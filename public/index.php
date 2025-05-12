@@ -16,7 +16,7 @@
 <?php
 require __DIR__ . '/../includes/firebase_fetch.php';
 $recientes = obtenerProductosRecientes();
-$preventas = obtenerProductosPreventa();
+//$preventas = obtenerProductosPreventa();
 ?>
 
 <!-- Carrusel fuera de container -->
@@ -41,26 +41,9 @@ $preventas = obtenerProductosPreventa();
 
 <!-- Sección de Productos Recientes -->
 <section class="container mb-5">
+  <h2 class="text-center mb-5">Productos Recientes</h2>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
     <?php foreach ($recientes as $producto): ?>
-      <div class="col">
-        <div class="card h-100 product-card">
-          <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
-          <div class="card-body">
-            <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
-            <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
-          </div>
-        </div>
-      </div>
-    <?php endforeach; ?>
-  </div>
-</section>
-
-<!-- Sección de Productos en Preventa -->
-<section class="container mb-5">
-  <h2 class="text-center mb-4">Productos en Preventa</h2>
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
-    <?php foreach ($preventas as $producto): ?>
       <div class="col">
         <div class="card h-100 product-card">
           <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">

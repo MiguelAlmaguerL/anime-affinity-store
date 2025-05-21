@@ -1,20 +1,19 @@
 <?php
-  // Simulación de datos que serían traídos desde la base de datos
-  $producto = [
-    "nombre" => "Gojo Satoru",
-    "descripcion" => "Figura edición limitada con base personalizada. Altura: 25 cm.",
-    "precio" => "$6,199.00 MXN",
-    "imagenes" => [
-      "assets/img/ejemplo1.png",
-      "assets/img/ejemplo2.jpg",
-      "assets/img/ejemplo3.jpg"
-    ],
-    "material" => "PVC y ABS",
-    "altura" => "25 cm",
-    "disponibilidad" => "Disponible",
-    "categoria" => "Figuras de colección",
-    "estudio" => "Jujutsu Studio",
-  ];
+require __DIR__ . '/../includes/firebase_fetch.php';
+
+// Verifica si se proporcionó un ID por la URL
+$idProducto = $_GET['id'] ?? null;
+if (!$idProducto) {
+  echo "Producto no especificado.";
+  exit;
+}
+
+// Obtener el producto por ID
+$producto = obtenerProductoPorID($idProducto);
+if (!$producto) {
+  echo "Producto no encontrado.";
+  exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +37,7 @@
         <div class="carousel-inner">
           <?php foreach ($producto['imagenes'] as $index => $img): ?>
             <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-              <img src="<?= $img ?>" class="d-block w-100" alt="Imagen del producto">
+              <img src="<?= htmlspecialchars($img) ?>" class="d-block w-100" alt="Imagen del producto">
             </div>
           <?php endforeach; ?>
         </div>
@@ -53,29 +52,24 @@
       <!-- Miniaturas -->
       <div class="carousel-thumbnails">
         <?php foreach ($producto['imagenes'] as $index => $img): ?>
-          <img src="<?= $img ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>">
+          <img src="<?= htmlspecialchars($img) ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>">
         <?php endforeach; ?>
       </div>
     </div>
 
     <!-- Detalles del producto -->
     <div class="col-md-7">
-      <h2><?= $producto["nombre"] ?></h2>
-      <p class="text-muted"><?= $producto["disponibilidad"] ?></p>
-      <h4 class="text-danger"><?= $producto["precio"] ?></h4>
-      <p><?= $producto["descripcion"] ?></p>
+      <h2><?= htmlspecialchars($producto['nombre']) ?></h2>
+      <p class="text-muted"><?= htmlspecialchars($producto['estado'] ?? 'Sin estado') ?></p>
+      <h4 class="text-danger">$<?= number_format($producto['precio'], 2) ?> MXN</h4>
+      <p><?= htmlspecialchars($producto['descripcion']) ?></p>
       <ul>
-        <li><strong>Altura:</strong> <?= $producto["altura"] ?></li>
-        <li><strong>Material:</strong> <?= $producto["material"] ?></li>
-        <li><strong>Categoría:</strong> <?= $producto["categoria"] ?></li>
-        <li><strong>Estudio:</strong> <?= $producto["estudio"] ?></li>
+        <li><strong>Categoría:</strong> <?= htmlspecialchars($producto['categoria'] ?? 'Sin categoría') ?></li>
+        <li><strong>Marca:</strong> <?= htmlspecialchars($producto['marca'] ?? 'Sin marca') ?></li>
+        <li><strong>Escala:</strong> <?= htmlspecialchars($producto['escala'] ?? 'No especificada') ?></li>
+        <li><strong>Serie:</strong> <?= htmlspecialchars($producto['serie'] ?? 'No especificada') ?></li>
+        <li><strong>Fecha de lanzamiento:</strong> <?= date('d-m-Y', strtotime($producto['fecha_lanzamiento'])) ?></li>
       </ul>
-
-      <!-- Descripción extendida -->
-      <div class="mt-5">
-        <h4>Descripción detallada</h4>
-        <p>Esta figura está elaborada con materiales de alta calidad y presenta un acabado excepcional. Perfecta para coleccionistas de anime que desean lo mejor en su vitrina...</p>
-      </div>
 
       <div class="mt-5">
         <h5>¿Te interesa?</h5>
@@ -86,14 +80,11 @@
         <a href="terminos.php" class="link-terminos" title="Consulta los Términos y Condiciones antes de Comprar">Consulta nuestros Términos y Condiciones antes de realizar un pedido</a>
       </div>
 
-
       <div class="d-flex flex-wrap gap-2">
-        <!-- Botón llamada a la acción: Chat por WhatsApp -->
         <a href="https://wa.me/521XXXXXXXXXX" class="btn btn-whatsapp d-flex align-items-center">
           <img src="assets/icons/whatsapp01.png" alt="WhatsApp" class="icon-btn me-2">
           Consultar por WhatsApp
         </a>
-        <!-- Botón llamada a la acción: Chat por Facebook/Messenger -->
         <a href="https://m.me/usuario_facebook" class="btn btn-messenger d-flex align-items-center">
           <img src="assets/icons/messenger01.png" alt="Messenger" class="icon-btn me-2">
           Consultar por Messenger

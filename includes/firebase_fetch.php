@@ -44,42 +44,277 @@ function getAccessToken($keyFilePath) {
     return $data['access_token'];
 }
 
-/*function obtenerProductosPorEstado($accessToken, $projectId, $estado, $limite = 4) {
-    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+//Función para traer productos con estado de 'Inventario' o 'Existencia' -- SOLO PARA PAGINA DE INICIO
+function obtenerProductosInventario($limite = 4) {
+    global $accessToken, $projectId;
 
-    $query = [
-        'structuredQuery' => [
-            'from' => [['collectionId' => 'productos']],
-            'where' => [
-                'fieldFilter' => [
-                    'field' => ['fieldPath' => 'estado'],
-                    'op' => 'EQUAL',
-                    'value' => ['stringValue' => $estado]
-                ]
-            ],
-            'orderBy' => [[
-                'field' => ['fieldPath' => 'fecha_subida'],
-                'direction' => 'DESCENDING'
-            ]],
-            'limit' => $limite
-        ]
+    // Consulta sin filtro: trae los productos más recientes
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
     ];
 
-    $options = [
+    $body = json_encode([
+        "structuredQuery" => [
+            "from" => [["collectionId" => "productos"]],
+            "orderBy" => [[
+                "field" => ["fieldPath" => "fecha_subida"],
+                "direction" => "DESCENDING"
+            ]],
+            "limit" => 16  // mayor cantidad para poder filtrar después
+        ]
+    ]);
+
+    $opts = [
         'http' => [
             'method' => 'POST',
-            'header' => "Authorization: Bearer $accessToken\r\nContent-Type: application/json",
-            'content' => json_encode($query)
+            'header' => implode("\r\n", $headers),
+            'content' => $body
         ]
     ];
 
-    $context = stream_context_create($options);
-    $response = file_get_contents($url, false, $context);
-    return json_decode($response, true);
-}*/
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
 
-// Función para productos recientes (estado: Disponible o todos)
-function obtenerProductosRecientes($limite = 8) {
+    $data = json_decode($response, true);
+    if (!is_array($data)) return [];
+
+    $productos = [];
+
+    foreach ($data as $doc) {
+        if (!isset($doc['document']['fields'])) continue;
+        $fields = $doc['document']['fields'];
+        $estadoRef = $fields['estadosID']['referenceValue'] ?? '';
+
+        // Si la referencia contiene 'inventario', lo consideramos válido
+        if (strpos($estadoRef, 'estados/inventario') !== false) {
+            $productos[] = [
+                'nombre' => $fields['nombre']['stringValue'] ?? '',
+                'precio' => isset($fields['precio']['integerValue'])
+                    ? (int)$fields['precio']['integerValue']
+                    : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
+                'imagenes' => array_map(
+                    fn($img) => $img['stringValue'],
+                    $fields['imagenes']['arrayValue']['values'] ?? []
+                ),
+                'estado_nombre' => 'En existencia'  // Valor fijo por ahora
+            ];
+        }
+
+        // Limitamos manualmente en PHP
+        if (count($productos) >= $limite) break;
+    }
+
+    return $productos;
+}
+
+// NUEVA FUNCIÓN: Función para mostrar los Productos en estado de 'Preventa' -- SOLO PARA PAGINA DE INICIO
+function obtenerProductosPreventa($limite = 4) {
+    global $accessToken, $projectId;
+
+    // Consulta sin filtro: trae los productos más recientes
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $body = json_encode([
+        "structuredQuery" => [
+            "from" => [["collectionId" => "productos"]],
+            "orderBy" => [[
+                "field" => ["fieldPath" => "fecha_subida"],
+                "direction" => "DESCENDING"
+            ]],
+            "limit" => 16  // mayor cantidad para poder filtrar después
+        ]
+    ]);
+
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $data = json_decode($response, true);
+    if (!is_array($data)) return [];
+
+    $productos = [];
+
+    foreach ($data as $doc) {
+        if (!isset($doc['document']['fields'])) continue;
+        $fields = $doc['document']['fields'];
+        $estadoRef = $fields['estadosID']['referenceValue'] ?? '';
+
+        //Si la referencia contiene 'preventa', lo consideramos válido
+        if (strpos($estadoRef, 'estados/preventa') !== false) {
+            $productos[] = [
+                'nombre' => $fields['nombre']['stringValue'] ?? '',
+                'precio' => isset($fields['precio']['integerValue'])
+                    ? (int)$fields['precio']['integerValue']
+                    : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
+                'imagenes' => array_map(
+                    fn($img) => $img['stringValue'],
+                    $fields['imagenes']['arrayValue']['values'] ?? []
+                ),
+                'estado_nombre' => 'Preventa'  // Valor fijo por ahora
+            ];
+        }
+
+        // Limitamos manualmente en PHP
+        if (count($productos) >= $limite) break;
+    }
+
+    return $productos;
+}
+
+//Función para obtener productos en grupos de 21 productos en 'Ver todos los productos', de manera simple
+function obtenerProductosPaginados($limite = 21, $startAfter = null) {
+    global $accessToken, $projectId;
+
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $structuredQuery = [
+        "from" => [["collectionId" => "productos"]],
+        "orderBy" => [[
+            "field" => ["fieldPath" => "fecha_subida"],
+            "direction" => "DESCENDING"
+        ]],
+        "limit" => $limite
+    ];
+
+    // Si viene un valor de startAfter, lo agregamos
+    if ($startAfter) {
+        $structuredQuery["startAt"] = [
+            "values" => [[ "timestampValue" => $startAfter ]]
+        ];
+    }
+
+    $body = json_encode(["structuredQuery" => $structuredQuery]);
+
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $data = json_decode($response, true);
+    if (!is_array($data)) return [];
+
+    $productos = [];
+
+    foreach ($data as $doc) {
+        if (!isset($doc['document']['fields'])) continue;
+
+        $fields = $doc['document']['fields'];
+
+        $productos[] = [
+            'id' => basename($doc['document']['name']),
+            'nombre' => $fields['nombre']['stringValue'] ?? '',
+            'precio' => isset($fields['precio']['integerValue']) 
+                ? (int)$fields['precio']['integerValue']
+                : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
+            'imagenes' => array_map(
+                fn($img) => $img['stringValue'],
+                $fields['imagenes']['arrayValue']['values'] ?? []
+            ),
+            'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+        ];
+    }
+
+    return $productos;
+}
+
+// Función para obtener productos con estado 'preventa' con paginación basada en fecha_subida
+function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
+    global $accessToken, $projectId;
+
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $structuredQuery = [
+        "from" => [["collectionId" => "productos"]],
+        "orderBy" => [[
+            "field" => ["fieldPath" => "fecha_subida"],
+            "direction" => "DESCENDING"
+        ]],
+        "limit" => 50 // Obtenemos más para filtrar manualmente los de 'preventa'
+    ];
+
+    // Si se envía un cursor, lo usamos como punto de partida
+    if ($startAfter) {
+        $structuredQuery["startAt"] = [
+            "values" => [[ "timestampValue" => $startAfter ]]
+        ];
+    }
+
+    $body = json_encode(["structuredQuery" => $structuredQuery]);
+
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $data = json_decode($response, true);
+    if (!is_array($data)) return [];
+
+    $productos = [];
+    
+    foreach ($data as $doc) {
+        if (!isset($doc['document']['fields'])) continue;
+
+        $fields = $doc['document']['fields'];
+        $estadoRef = $fields['estadosID']['referenceValue'] ?? '';
+
+        // Solo agregar productos que estén en 'preventa'
+        if (strpos($estadoRef, 'estados/preventa') !== false) {
+            $productos[] = [
+                'id' => basename($doc['document']['name']),
+                'nombre' => $fields['nombre']['stringValue'] ?? '',
+                'precio' => isset($fields['precio']['integerValue']) 
+                    ? (int)$fields['precio']['integerValue']
+                    : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
+                'imagenes' => array_map(
+                    fn($img) => $img['stringValue'],
+                    $fields['imagenes']['arrayValue']['values'] ?? []
+                ),
+                'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+            ];
+
+            // Cortamos al alcanzar el límite
+            if (count($productos) >= $limite) break;
+        }
+    }
+
+    return $productos;
+}
+
+// Función para obtener hasta 100 productos recientes para búsqueda local
+function obtenerProductosParaBusqueda($limite = 100) {
     global $accessToken, $projectId;
 
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
@@ -121,8 +356,12 @@ function obtenerProductosRecientes($limite = 8) {
         $fields = $doc['document']['fields'];
 
         $productos[] = [
+            'id' => basename($doc['document']['name']),
             'nombre' => $fields['nombre']['stringValue'] ?? '',
-            'precio' => isset($fields['precio']['integerValue']) ? (int)$fields['precio']['integerValue'] : 0,
+            'descripcion' => $fields['descripcion']['stringValue'] ?? '',
+            'precio' => isset($fields['precio']['integerValue'])
+                ? (int)$fields['precio']['integerValue']
+                : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
             'imagenes' => array_map(
                 fn($img) => $img['stringValue'],
                 $fields['imagenes']['arrayValue']['values'] ?? []
@@ -133,64 +372,92 @@ function obtenerProductosRecientes($limite = 8) {
     return $productos;
 }
 
-//NUEVA FUNCIÓN: Productos en Preventa
-/*function obtenerProductosPreventa($limite = 4) {
+// Función para traer producto por su ID y mostrarlo en Detalles.php
+function obtenerProductoPorId($id) {
     global $accessToken, $projectId;
 
-    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
+    // Obtener documento del producto
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/productos/{$id}";
     $headers = [
         "Authorization: Bearer $accessToken",
         "Content-Type: application/json"
     ];
 
-    $body = json_encode([
-        "structuredQuery" => [
-            "from" => [["collectionId" => "productos"]],
-            "where" => [
-                "fieldFilter" => [
-                    "field" => ["fieldPath" => "estado"],
-                    "op" => "EQUAL",
-                    "value" => ["stringValue" => "Preventa"]
-                ]
-            ],
-            "orderBy" => [[
-                "field" => ["fieldPath" => "fecha_subida"],
-                "direction" => "DESCENDING"
-            ]],
-            "limit" => $limite
-        ]
-    ]);
-
     $opts = [
         'http' => [
-            'method' => 'POST',
-            'header' => implode("\r\n", $headers),
-            'content' => $body
+            'method' => 'GET',
+            'header' => implode("\r\n", $headers)
         ]
     ];
 
     $response = @file_get_contents($url, false, stream_context_create($opts));
-    if ($response === false) return [];
+    if ($response === false) return null;
 
-    $data = json_decode($response, true);
-    if (!is_array($data)) return [];
+    $doc = json_decode($response, true);
+    if (!isset($doc['fields'])) return null;
 
-    $productos = [];
+    $fields = $doc['fields'];
 
-    foreach ($data as $doc) {
-        if (!isset($doc['document']['fields'])) continue;
+    // Función para resolver una referencia con formato corto (ej: "estados/inventario")
+    $resolverReferencia = function($refPath) use ($accessToken, $projectId) {
+        if (!$refPath) return null;
 
-        $fields = $doc['document']['fields'];
+        // Detectar si ya viene en formato completo o no
+        $ruta = str_starts_with($refPath, 'projects/')
+        ? $refPath
+        : "projects/{$projectId}/databases/(default)/documents/{$refPath}";
 
-        $productos[] = [
-            'nombre' => $fields['nombre']['stringValue'] ?? '',
-            'precio' => isset($fields['precio']['integerValue']) ? (int)$fields['precio']['integerValue'] : 0,
-            'imagenes' => array_map(
-                fn($img) => $img['stringValue'],
-                $fields['imagenes']['arrayValue']['values'] ?? []
-            )
+        $url = "https://firestore.googleapis.com/v1/{$ruta}";
+        $headers = [
+            "Authorization: Bearer $accessToken",
+            "Content-Type: application/json"
         ];
-    }
+        $opts = [
+            'http' => [
+                'method' => 'GET',
+                'header' => implode("\r\n", $headers)
+            ]
+        ];
+        $resp = @file_get_contents($url, false, stream_context_create($opts));
+        if ($resp === false) return null;
+        $data = json_decode($resp, true);
 
-    return $productos;
-}*/
+        if (strpos($refPath, 'escalas/') !== false) {
+            return $data['fields']['valor']['stringValue'] ?? null;
+        } else {
+            return $data['fields']['nombre']['stringValue'] ?? null;
+        }
+    };
+
+
+    return [
+        'id' => $id,
+        'nombre' => $fields['nombre']['stringValue'] ?? '',
+        'descripcion' => $fields['descripcion']['stringValue'] ?? '',
+        'precio' => isset($fields['precio']['integerValue'])
+            ? (int)$fields['precio']['integerValue']
+            : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
+        'imagenes' => array_map(
+            fn($img) => $img['stringValue'],
+            $fields['imagenes']['arrayValue']['values'] ?? []
+        ),
+        'categoria' => isset($fields['categoriasID']['referenceValue'])
+            ? $resolverReferencia($fields['categoriasID']['referenceValue'])
+            : null,
+        'marca' => isset($fields['marcasID']['referenceValue'])
+            ? $resolverReferencia($fields['marcasID']['referenceValue'])
+            : null,
+        'escala' => isset($fields['escalasID']['referenceValue'])
+            ? $resolverReferencia($fields['escalasID']['referenceValue'])
+            : null,
+        'estado' => isset($fields['estadosID']['referenceValue'])
+            ? $resolverReferencia($fields['estadosID']['referenceValue'])
+            : null,
+        'serie' => isset($fields['seriesID']['referenceValue'])
+            ? $resolverReferencia($fields['seriesID']['referenceValue'])
+            : null,
+        'fecha_lanzamiento' => $fields['fecha_lanzamiento']['timestampValue'] ?? null,
+        'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? null,
+        'slug' => $fields['slug']['stringValue'] ?? null
+    ];
+}

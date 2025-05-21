@@ -12,6 +12,21 @@
 <body>
 
 <?php include('navbar.php'); ?>
+<?php
+require __DIR__ . '/../includes/firebase_fetch.php';
+
+// Número de productos por página
+$limite = 21;
+
+// Obtener el parámetro 'after' desde la URL si existe
+$startAfter = $_GET['after'] ?? null;
+
+// Obtener productos con paginación
+$productos = obtenerProductosPreventaPaginados($limite, $startAfter);
+
+// Obtener el valor de fecha_subida del último producto para la próxima página
+$nextStart = end($productos)['fecha_subida'] ?? null;
+?>
 
 <div class="container py-4">
   <h2 class="text-center mb-5">Productos en Preventa</h2>
@@ -29,19 +44,20 @@
 
     <div class="col-md-9">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        <div class="col">
-          <div class="card h-100 product-card">
-            <img src="assets/img/ejemplo_preventa.jpg" class="card-img-top" alt="Producto Preventa">
-            <div class="card-body">
-              <h5 class="product-title"><a href="detalles.php?id=101" class="text-decoration-none text-dark">Figura Especial</a></h5>
-              <p class="card-text text-center">Edición limitada de colección. Altura: 30 cm.</p>
-              <p class="product-price">$2,999.00 MXN</p>
-            </div>
-            <div class="card-body text-center">
-              <a href="detalles.php?id=101" class="btn btn-vermas">>>>Ver más</a>
+        <?php foreach ($productos as $producto): ?>
+          <div class="col">
+            <div class="card h-100 product-card">
+              <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
+              <div class="card-body">
+                <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
+                <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
+              </div>
+              <div class="card-body text-center">
+                <a href="detalles.php?id=<?= $producto['id'] ?>" class="btn btn-vermas">>>> Ver más</a>
+              </div>
             </div>
           </div>
-        </div>
+        <?php endforeach; ?>
 
         <!-- Si no hay preventas -->
         <!-- <div class="col-12 text-center my-5 ps-4">
@@ -50,6 +66,19 @@
           <p>Intenta nuevamente :D</p>
           <a href="productos.php" class="btn btn-noresult mt-3">Volver a todos los productos</a>
         </div> -->
+      </div>
+      <div class="text-center my-5 d-flex justify-content-center gap-3 flex-wrap">
+        <!-- Botón para volver al principio (recarga limpia) -->
+        <a href="preventas.php" class="btn btn-outline-secondary">
+          ⟨ Volver al Principio
+        </a>
+
+        <!-- Botón para cargar el siguiente grupo de productos -->
+        <?php if ($nextStart): ?>
+          <a href="preventas.php?after=<?= urlencode($nextStart) ?>" class="btn btn-primary">
+            Ver más ⟩
+          </a>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -66,6 +95,12 @@
 
 </div>
 
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
 <?php include('footer.php'); ?>
 
 </body>

@@ -1,4 +1,24 @@
 <!-- buscar.php -->
+ <?php
+require __DIR__ . '/../includes/firebase_fetch.php';
+
+// Obtener término de búsqueda desde la URL
+$terminoBusqueda = isset($_GET['query']) ? trim($_GET['query']) : '';
+
+// Obtener todos los productos disponibles (hasta 100)
+$productos = obtenerProductosParaBusqueda();
+
+// Filtrar productos por coincidencia de nombre
+$productosEncontrados = [];
+
+if (!empty($terminoBusqueda)) {
+    foreach ($productos as $producto) {
+        if (stripos($producto['nombre'], $terminoBusqueda) !== false) {
+            $productosEncontrados[] = $producto;
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,26 +33,6 @@
 
 <?php include('navbar.php'); ?>
 
-<?php
-$productosEncontrados = [
-  [
-    "nombre" => "Zoro Roronoa",
-    "descripcion" => "Figura de acción detallada con katana. Altura: 20 cm.",
-    "precio" => "$1,199.00 MXN",
-    "imagen" => "assets/img/ejemplo1.png",
-    "id" => 1
-  ],
-  [
-    "nombre" => "Gojo Satoru",
-    "descripcion" => "Figura edición limitada con base personalizada. Altura: 25 cm.",
-    "precio" => "$6,199.00 MXN",
-    "imagen" => "assets/img/ejemplo2.jpg",
-    "id" => 2
-  ]
-];
-$terminoBusqueda = isset($_GET['query']) ? trim($_GET['query']) : '';
-?>
-
 <div class="container py-4">
   <h2 class="text-center mb-5">
 <!-- Botón para abrir filtros en modo móvil -->
@@ -43,7 +43,7 @@ $terminoBusqueda = isset($_GET['query']) ? trim($_GET['query']) : '';
 </div>
 
 
-    <?php
+     <?php
       if (!empty($terminoBusqueda)) {
           echo 'Resultados para: <span style="color: var(--primary-red);">' . htmlspecialchars($terminoBusqueda) . '</span>';
       } else {
@@ -61,14 +61,13 @@ $terminoBusqueda = isset($_GET['query']) ? trim($_GET['query']) : '';
           <?php foreach ($productosEncontrados as $producto) : ?>
             <div class="col">
               <div class="card h-100 product-card">
-                <img src="<?= $producto['imagen']; ?>" class="card-img-top" alt="<?= $producto['nombre']; ?>">
+                <img src="<?= htmlspecialchars($producto['imagenes'][0] ?? 'assets/img/default.png') ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
                 <div class="card-body">
-                  <h5 class="product-title"><a href="detalles.php?id=<?= $producto['id']; ?>" class="text-decoration-none text-dark"><?= $producto['nombre']; ?></a></h5>
-                  <p class="card-text text-center"><?= $producto['descripcion']; ?></p>
-                  <p class="product-price"><?= $producto['precio']; ?> MXN</p>
+                  <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
+                  <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
                 </div>
                 <div class="card-body text-center">
-                  <a href="detalles.php?id=<?= $producto['id']; ?>" class="btn btn-vermas">>>>Ver más</a>
+                  <a href="detalles.php?id=<?= $producto['id'] ?>" class="btn btn-vermas">>>> Ver más</a>
                 </div>
               </div>
             </div>

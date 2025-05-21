@@ -13,6 +13,22 @@
 
 <?php include('navbar.php'); ?>
 
+<?php
+require __DIR__ . '/../includes/firebase_fetch.php';
+
+// Número de productos por página
+$limite = 21;
+
+// Obtener el parámetro 'after' desde la URL si existe
+$startAfter = $_GET['after'] ?? null;
+
+// Obtener productos con paginación
+$productos = obtenerProductosPaginados($limite, $startAfter);
+
+// Obtener el valor de fecha_subida del último producto para la próxima página
+$nextStart = end($productos)['fecha_subida'] ?? null;
+?>
+
 <div class="container py-4">
   <h2 class="text-center mb-5">Todos los Productos</h2>
 
@@ -31,36 +47,34 @@
     <!-- Columna de productos -->
     <div class="col-md-9">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        <!-- Ejemplos de productos -->
-        <div class="col">
-          <div class="card h-100 product-card">
-            <img src="assets/img/ejemplo1.png" class="card-img-top" alt="Figura 1">
-            <div class="card-body">
-              <h5 class="product-title"><a href="detalles.php?id=1" class="text-decoration-none text-dark">Zoro Roronoa</a></h5>
-              <p class="card-text text-center">Figura de acción detallada con katana. Altura: 20 cm.</p>
-              <p class="product-price">$1,199.00 MXN</p>
-            </div>
-            <div class="card-body text-center">
-              <a href="detalles.php?id=1" class="btn btn-vermas">>>>Ver más</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col">
-          <div class="card h-100 product-card">
-            <img src="assets/img/ejemplo2.jpg" class="card-img-top" alt="Figura 2">
-            <div class="card-body">
-              <h5 class="product-title"><a href="detalles.php?id=2" class="text-decoration-none text-dark">Gojo Satoru</a></h5>
-              <p class="card-text text-center">Figura edición limitada con base personalizada. Altura: 25 cm.</p>
-              <p class="product-price">$6,199.00 MXN</p>
-            </div>
-            <div class="card-body text-center">
-              <a href="detalles.php?id=2" class="btn btn-vermas">>>>Ver más</a>
-            </div>
-          </div>
-        </div>
-
         <!-- Más productos... -->
+         <?php foreach ($productos as $producto): ?>
+          <div class="col">
+            <div class="card h-100 product-card">
+              <img src="<?= htmlspecialchars($producto['imagenes'][0]) ?>" class="card-img-top" alt="<?= htmlspecialchars($producto['nombre']) ?>">
+              <div class="card-body">
+                <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
+                <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
+              </div>
+              <div class="card-body text-center">
+                <a href="detalles.php?id=<?= $producto['id'] ?>" class="btn btn-vermas">>>> Ver más</a>
+              </div>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+      <div class="text-center my-5 d-flex justify-content-center gap-3 flex-wrap">
+        <!-- Botón para volver al principio (recarga limpia) -->
+        <a href="productos.php" class="btn btn-outline-secondary">
+          ⟨ Volver al Principio
+        </a>
+
+        <!-- Botón para cargar el siguiente grupo de productos -->
+        <?php if ($nextStart): ?>
+          <a href="productos.php?after=<?= urlencode($nextStart) ?>" class="btn btn-primary">
+            Ver más ⟩
+          </a>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -78,6 +92,12 @@
 
 </div>
 
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
 <?php include('footer.php'); ?>
 
 </body>

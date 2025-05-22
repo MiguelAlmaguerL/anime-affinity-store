@@ -12,7 +12,10 @@
 <body>
 
 <!-- Barra de navegación -->
-<?php include('navbar.php'); ?>
+<?php 
+  include('navbar.php');
+  require __DIR__ . '/../includes/firebase_fetch.php'; 
+?>
 
 <div class="container py-5 text-center">
   <h2 class="pedidos-titulo">¿Buscas una Figura en Especial?</h2>
@@ -47,6 +50,19 @@
     *Recuerda que los pedidos especiales están sujetos a disponibilidad de nuestros proveedores.
   </p>
 </div>
+
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
 
 
 <!-- Footer del sitio -->

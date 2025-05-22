@@ -51,6 +51,9 @@ $preventas = obtenerProductosPreventa();
             <h5 class="product-title text-center"><?= htmlspecialchars($producto['nombre']) ?></h5>
             <p class="product-price text-center">$<?= number_format($producto['precio'], 2) ?> MXN</p>
           </div>
+          <div class="card-body text-center">
+              <a href="detalles.php?id=<?= $producto['id'] ?>" class="btn btn-vermas">>>> Ver más</a>
+          </div>
         </div>
       </div>
     <?php endforeach; ?>
@@ -69,11 +72,27 @@ $preventas = obtenerProductosPreventa();
             <h5 class="product-title text-center"><?= htmlspecialchars($prodprev['nombre']) ?></h5>
             <p class="product-price text-center">$<?= number_format($prodprev['precio'], 2) ?> MXN</p>
           </div>
+          <div class="card-body text-center">
+              <a href="detalles.php?id=<?= $prodprev['id'] ?>" class="btn btn-vermas">>>> Ver más</a>
+          </div>
         </div>
       </div>
     <?php endforeach; ?>
   </div>
 </section>
+
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
 
 <!-- Footer del sitio -->
 <?php include('footer.php'); ?>

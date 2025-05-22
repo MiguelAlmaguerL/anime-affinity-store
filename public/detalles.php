@@ -20,13 +20,13 @@ if (!$producto) {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalles del Producto</title>
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
 
-<!-- Barra de navegación del sitio -->
 <?php include('navbar.php'); ?>
 
 <div class="container py-4">
@@ -94,7 +94,18 @@ if (!$producto) {
   </div>
 </div>
 
-<!-- Footer -->
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
 <?php include('footer.php'); ?>
 
 </body>

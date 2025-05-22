@@ -90,6 +90,7 @@ function obtenerProductosInventario($limite = 4) {
         // Si la referencia contiene 'inventario', lo consideramos válido
         if (strpos($estadoRef, 'estados/inventario') !== false) {
             $productos[] = [
+                'id' => basename($doc['document']['name']),
                 'nombre' => $fields['nombre']['stringValue'] ?? '',
                 'precio' => isset($fields['precio']['integerValue'])
                     ? (int)$fields['precio']['integerValue']
@@ -155,6 +156,7 @@ function obtenerProductosPreventa($limite = 4) {
         //Si la referencia contiene 'preventa', lo consideramos válido
         if (strpos($estadoRef, 'estados/preventa') !== false) {
             $productos[] = [
+                'id' => basename($doc['document']['name']),
                 'nombre' => $fields['nombre']['stringValue'] ?? '',
                 'precio' => isset($fields['precio']['integerValue'])
                     ? (int)$fields['precio']['integerValue']
@@ -313,7 +315,7 @@ function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
     return $productos;
 }
 
-// Función para obtener hasta 100 productos recientes para búsqueda local
+// Función para obtener hasta 100 productos recientes para búsqueda local (este número podría ser mayor)
 function obtenerProductosParaBusqueda($limite = 100) {
     global $accessToken, $projectId;
 

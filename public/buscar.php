@@ -1,5 +1,5 @@
 <!-- buscar.php -->
- <?php
+<?php
 require __DIR__ . '/../includes/firebase_fetch.php';
 
 // Obtener término de búsqueda desde la URL
@@ -43,7 +43,7 @@ if (!empty($terminoBusqueda)) {
 </div>
 
 
-     <?php
+    <?php
       if (!empty($terminoBusqueda)) {
           echo 'Resultados para: <span style="color: var(--primary-red);">' . htmlspecialchars($terminoBusqueda) . '</span>';
       } else {
@@ -95,6 +95,18 @@ if (!empty($terminoBusqueda)) {
 </div>
 
 </div>
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
 
 <?php include('footer.php'); ?>
 

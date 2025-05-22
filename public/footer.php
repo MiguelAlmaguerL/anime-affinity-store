@@ -6,7 +6,7 @@
   </p>
     <a href="https://facebook.com/..." target="_blank"><img src="assets/icons/facebook.png" class="social-icon" alt="Facebook"></a>
     <a href="https://instagram.com/..." target="_blank"><img src="assets/icons/instagram.png" class="social-icon" alt="Instagram"></a>
-    <a href="https://www.tiktok.com/@animeaffstore" target="_blank"><img src="assets/icons/" class="social-icon" alt="TikTok"></a>
+    <a href="https://www.tiktok.com/@animeaffstore" target="_blank"><img src="assets/icons/tik-tok.png" class="social-icon" alt="TikTok"></a>
   </div>
   <p>© 2025 Anime Affinity Store - Todos los derechos reservados</p>
 </footer>

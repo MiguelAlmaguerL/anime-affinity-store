@@ -26,6 +26,8 @@ $productos = obtenerProductosPreventaPaginados($limite, $startAfter);
 
 // Obtener el valor de fecha_subida del último producto para la próxima página
 $nextStart = end($productos)['fecha_subida'] ?? null;
+
+$mostrarBotonVerMas = count($productos) >= $limite;
 ?>
 
 <div class="container py-4">
@@ -74,7 +76,7 @@ $nextStart = end($productos)['fecha_subida'] ?? null;
         </a>
 
         <!-- Botón para cargar el siguiente grupo de productos -->
-        <?php if ($nextStart): ?>
+        <?php if ($mostrarBotonVerMas && $nextStart): ?>
           <a href="preventas.php?after=<?= urlencode($nextStart) ?>" class="btn btn-primary">
             Ver más ⟩
           </a>
@@ -94,6 +96,18 @@ $nextStart = end($productos)['fecha_subida'] ?? null;
 </div>
 
 </div>
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
 
 <!-- Botón flotante para ir al principio -->
 <button id="btnIrArriba" class="btn btn-dark rounded-circle" 

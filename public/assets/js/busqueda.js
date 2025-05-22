@@ -3,13 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const resultados = document.getElementById('resultados');
   const searchWrapper = document.querySelector('.search-wrapper');
 
-  const productos = [
-    'Zoro Roronoa',
-    'Gojo Satoru',
-    'Tanjiro Kamado',
-    'Eren Yeager',
-    'Rem - Re:Zero'
-  ];
+  const productos = typeof productoss !== 'undefined' ? productoss : [];
 
   function redirigirBusqueda(texto) {
     const query = encodeURIComponent(texto.trim());
@@ -25,21 +19,18 @@ document.addEventListener('DOMContentLoaded', function () {
       resultados.innerHTML = '';
 
       if (valor !== '') {
-        const filtrados = productos.filter(p => p.toLowerCase().includes(valor));
+        const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(valor));
 
         if (filtrados.length > 0) {
           resultados.style.display = 'block';
           filtrados.forEach(producto => {
             const li = document.createElement('li');
-            li.textContent = producto;
+            li.textContent = producto.nombre;
             li.classList.add('list-group-item');
             resultados.appendChild(li);
 
             li.addEventListener('click', () => {
-              inputBusqueda.value = producto;
-              resultados.innerHTML = '';
-              resultados.style.display = 'none';
-              redirigirBusqueda(producto);
+              window.location.href = `detalles.php?id=${producto.id}`;
             });
           });
 
@@ -114,19 +105,17 @@ document.addEventListener('DOMContentLoaded', function () {
       resultadosMobile.innerHTML = '';
 
       if (valor !== '') {
-        const filtrados = productos.filter(p => p.toLowerCase().includes(valor));
+        const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(valor));
 
         if (filtrados.length > 0) {
           filtrados.forEach(producto => {
             const li = document.createElement('li');
-            li.textContent = producto;
+            li.textContent = producto.nombre;
             li.classList.add('list-group-item');
             resultadosMobile.appendChild(li);
 
             li.addEventListener('click', () => {
-              inputBusquedaMobile.value = producto;
-              resultadosMobile.innerHTML = '';
-              redirigirBusqueda(producto);
+              window.location.href = `detalles.php?id=${producto.id}`;
             });
           });
         }

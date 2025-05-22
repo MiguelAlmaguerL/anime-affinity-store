@@ -11,7 +11,10 @@
 <body>
 
 <!-- Barra de navegación -->
-<?php include('navbar.php'); ?>
+<?php 
+  include('navbar.php');
+  require __DIR__ . '/../includes/firebase_fetch.php'; 
+?>
 
 <div class="container py-5">
   <h2 class="text-center mb-5">Términos y Condiciones</h2>
@@ -42,6 +45,20 @@
   </div>
 
 </div>
+
+<?php
+$productosBusqueda = obtenerProductosParaBusqueda();
+$datosParaJS = array_map(function($p) {
+  return [
+    'id' => $p['id'],
+    'nombre' => $p['nombre']
+  ];
+}, $productosBusqueda);
+?>
+<script>
+  const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
+</script>
+
 
 <!-- Footer -->
 <?php include('footer.php'); ?>

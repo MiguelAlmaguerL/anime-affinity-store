@@ -62,7 +62,7 @@ function obtenerProductosInventario($limite = 4) {
                 "field" => ["fieldPath" => "fecha_subida"],
                 "direction" => "DESCENDING"
             ]],
-            "limit" => 16  // mayor cantidad para poder filtrar después
+            "limit" => 250  // mayor cantidad para poder filtrar después
         ]
     ]);
 
@@ -110,7 +110,8 @@ function obtenerProductosInventario($limite = 4) {
     return $productos;
 }
 
-// NUEVA FUNCIÓN: Función para mostrar los Productos en estado de 'Preventa' -- SOLO PARA PAGINA DE INICIO
+
+//Función para mostrar los Productos en estado de 'Preventa' -- SOLO PARA PAGINA DE INICIO ---
 function obtenerProductosPreventa($limite = 4) {
     global $accessToken, $projectId;
 
@@ -128,7 +129,7 @@ function obtenerProductosPreventa($limite = 4) {
                 "field" => ["fieldPath" => "fecha_subida"],
                 "direction" => "DESCENDING"
             ]],
-            "limit" => 16  // mayor cantidad para poder filtrar después
+            "limit" => 250  // mayor cantidad para poder filtrar después
         ]
     ]);
 
@@ -176,7 +177,6 @@ function obtenerProductosPreventa($limite = 4) {
     return $productos;
 }
 
-//Función para obtener productos en grupos de 21 productos en 'Ver todos los productos', de manera simple
 function obtenerProductosPaginados($limite = 21, $startAfter = null) {
     global $accessToken, $projectId;
 
@@ -195,7 +195,6 @@ function obtenerProductosPaginados($limite = 21, $startAfter = null) {
         "limit" => $limite
     ];
 
-    // Si viene un valor de startAfter, lo agregamos
     if ($startAfter) {
         $structuredQuery["startAt"] = [
             "values" => [[ "timestampValue" => $startAfter ]]
@@ -226,23 +225,31 @@ function obtenerProductosPaginados($limite = 21, $startAfter = null) {
         $fields = $doc['document']['fields'];
 
         $productos[] = [
-            'id' => basename($doc['document']['name']),
-            'nombre' => $fields['nombre']['stringValue'] ?? '',
-            'precio' => isset($fields['precio']['integerValue']) 
+            'id'         => basename($doc['document']['name']),
+            'nombre'     => $fields['nombre']['stringValue'] ?? '',
+            //'descripcion'=> $fields['descripcion']['stringValue'] ?? '',
+            'precio'     => isset($fields['precio']['integerValue']) 
                 ? (int)$fields['precio']['integerValue']
                 : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
-            'imagenes' => array_map(
+            'imagenes'   => array_map(
                 fn($img) => $img['stringValue'],
                 $fields['imagenes']['arrayValue']['values'] ?? []
             ),
-            'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+            'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? '',
+            // Campos de referencia sin resolver
+            'categoria'  => $fields['categoriasID']['referenceValue'] ?? '',
+            'marca'      => $fields['marcasID']['referenceValue'] ?? '',
+            'serie'      => $fields['seriesID']['referenceValue'] ?? '',
+            'escala'     => $fields['escalasID']['referenceValue'] ?? '',
+            'estado'     => $fields['estadosID']['referenceValue'] ?? ''
         ];
     }
 
     return $productos;
 }
 
-// Función para obtener productos con estado 'preventa' con paginación basada en fecha_subida
+
+// Función para obtener productos con estado 'preventa' con paginación basada en fecha_subida ---
 function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
     global $accessToken, $projectId;
 
@@ -258,7 +265,7 @@ function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
             "field" => ["fieldPath" => "fecha_subida"],
             "direction" => "DESCENDING"
         ]],
-        "limit" => 50 // Obtenemos más para filtrar manualmente los de 'preventa'
+        "limit" => 250 // Obtenemos más para filtrar manualmente los de 'preventa'
     ];
 
     // Si se envía un cursor, lo usamos como punto de partida
@@ -304,7 +311,12 @@ function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
                     fn($img) => $img['stringValue'],
                     $fields['imagenes']['arrayValue']['values'] ?? []
                 ),
-                'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+                'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? '',
+                'categoria'  => $fields['categoriasID']['referenceValue'] ?? '',
+                'marca'      => $fields['marcasID']['referenceValue'] ?? '',
+                'serie'      => $fields['seriesID']['referenceValue'] ?? '',
+                'escala'     => $fields['escalasID']['referenceValue'] ?? '',
+                'estado'     => $fields['estadosID']['referenceValue'] ?? ''
             ];
 
             // Cortamos al alcanzar el límite
@@ -315,8 +327,8 @@ function obtenerProductosPreventaPaginados($limite = 21, $startAfter = null) {
     return $productos;
 }
 
-// Función para obtener hasta 100 productos recientes para búsqueda local (este número podría ser mayor)
-function obtenerProductosParaBusqueda($limite = 100) {
+// Función para obtener hasta 250 productos recientes para búsqueda local (este número podría ser mayor)
+function obtenerProductosParaBusqueda($limite = 250) {
     global $accessToken, $projectId;
 
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents:runQuery";
@@ -360,21 +372,26 @@ function obtenerProductosParaBusqueda($limite = 100) {
         $productos[] = [
             'id' => basename($doc['document']['name']),
             'nombre' => $fields['nombre']['stringValue'] ?? '',
-            'descripcion' => $fields['descripcion']['stringValue'] ?? '',
             'precio' => isset($fields['precio']['integerValue'])
                 ? (int)$fields['precio']['integerValue']
                 : (isset($fields['precio']['doubleValue']) ? (float)$fields['precio']['doubleValue'] : 0),
             'imagenes' => array_map(
                 fn($img) => $img['stringValue'],
-                $fields['imagenes']['arrayValue']['values'] ?? []
-            )
+                $fields['imagenes']['arrayValue']['values'] ?? [],   
+            ),
+            // Campos de referencia sin resolver aún
+            'categoria'  => $fields['categoriasID']['referenceValue'] ?? '',
+            'marca'      => $fields['marcasID']['referenceValue'] ?? '',
+            'serie'      => $fields['seriesID']['referenceValue'] ?? '',
+            'escala'     => $fields['escalasID']['referenceValue'] ?? '',
+            'estado'     => $fields['estadosID']['referenceValue'] ?? ''
         ];
     }
 
     return $productos;
 }
 
-// Función para traer producto por su ID y mostrarlo en Detalles.php
+// Función para traer producto por su ID y mostrarlo en Detalles.php ---
 function obtenerProductoPorId($id) {
     global $accessToken, $projectId;
 
@@ -462,4 +479,57 @@ function obtenerProductoPorId($id) {
         'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? null,
         'slug' => $fields['slug']['stringValue'] ?? null
     ];
+}
+
+// Obtener todas las categorías
+function obtenerCategorias() {
+    return obtenerDocumentosDesdeColeccion('categorias', 'nombre');
+}
+
+// Obtener todas las marcas
+function obtenerMarcas() {
+    return obtenerDocumentosDesdeColeccion('marcas', 'nombre');
+}
+
+// Obtener todas las series
+function obtenerSeries() {
+    return obtenerDocumentosDesdeColeccion('series', 'nombre');
+}
+
+// Obtener todas las escalas
+function obtenerEscalas() {
+    return obtenerDocumentosDesdeColeccion('escalas', 'valor');
+}
+
+// Función reutilizable base
+function obtenerDocumentosDesdeColeccion($coleccion, $campoNombre) {
+    global $accessToken, $projectId;
+
+    $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/{$coleccion}";
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $opts = [
+        'http' => [
+            'method' => 'GET',
+            'header' => implode("\r\n", $headers)
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $data = json_decode($response, true);
+    if (!isset($data['documents'])) return [];
+
+    $resultado = [];
+    foreach ($data['documents'] as $doc) {
+        $id = basename($doc['name']);
+        $nombre = $doc['fields'][$campoNombre]['stringValue'] ?? '';
+        $resultado[] = ['id' => $id, 'nombre' => $nombre];
+    }
+
+    return $resultado;
 }

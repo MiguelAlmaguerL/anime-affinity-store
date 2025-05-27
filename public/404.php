@@ -27,7 +27,8 @@
       $datosParaJS = array_map(function($p) {
         return [
           'id' => $p['id'],
-          'nombre' => $p['nombre']
+          'nombre' => $p['nombre'],
+          'imagen' => $p['imagenes'][0] ?? 'assets/img/default.png'
         ];
       }, $productosBusqueda);
       ?>

@@ -12,23 +12,75 @@
 <body>
 
 <?php include('navbar.php'); ?>
+
 <?php
 require __DIR__ . '/../includes/firebase_fetch.php';
 
+//Capturar filtros de la URL
+$categoriasFiltro = $_GET['categorias'] ?? [];
+$marcasFiltro = $_GET['marcas'] ?? [];
+$seriesFiltro = $_GET['series'] ?? [];
+$escalasFiltro = $_GET['escalas'] ?? [];
+$preciosFiltro = $_GET['precio'] ?? [];
+$ordenFiltro = $_GET['orden'] ?? [];
+
+$hayFiltros = !empty($categoriasFiltro) || !empty($marcasFiltro) || !empty($seriesFiltro) || !empty($escalasFiltro) || !empty($preciosFiltro);
+
 // Número de productos por página
 $limite = 21;
-
 // Obtener el parámetro 'after' desde la URL si existe
 $startAfter = $_GET['after'] ?? null;
 
-// Obtener productos con paginación
-$productos = obtenerProductosPreventaPaginados($limite, $startAfter);
+if ($hayFiltros) {
+    $productos = obtenerProductosParaBusqueda(150); // trae todos para filtrar manualmente
+} else {
+    $productos = obtenerProductosPreventaPaginados($limite, $startAfter); // solo preventa, paginados
+}
 
-// Obtener el valor de fecha_subida del último producto para la próxima página
-$nextStart = end($productos)['fecha_subida'] ?? null;
+foreach ($productos as &$p) {
+    $p['categoria_id'] = $p['categoria'] ? basename($p['categoria']) : '';
+    $p['marca_id']     = $p['marca']     ? basename($p['marca'])     : '';
+    $p['serie_id']     = $p['serie']     ? basename($p['serie'])     : '';
+    $p['escala_id']    = $p['escala']    ? basename($p['escala'])    : '';
+    $p['estado_id']    = $p['estado']    ? basename($p['estado'])    : '';
+}
+unset($p);
 
-$mostrarBotonVerMas = count($productos) >= $limite;
+$productos = array_filter($productos, function ($p) use ($categoriasFiltro, $marcasFiltro, $seriesFiltro, $escalasFiltro, $preciosFiltro) {
+    if ($p['estado_id'] !== 'preventa') return false;
+
+    $matchCategoria = empty($categoriasFiltro) || in_array($p['categoria_id'], $categoriasFiltro);
+    $matchMarca     = empty($marcasFiltro)     || in_array($p['marca_id'], $marcasFiltro);
+    $matchSerie     = empty($seriesFiltro)     || in_array($p['serie_id'], $seriesFiltro);
+    $matchEscala    = empty($escalasFiltro)    || in_array($p['escala_id'], $escalasFiltro);
+
+    $precio = $p['precio'];
+    $matchPrecio =
+        empty($preciosFiltro) ||
+        (in_array('menos1000', $preciosFiltro) && $precio < 1000) ||
+        (in_array('1000a5000', $preciosFiltro) && $precio >= 1000 && $precio <= 5000) ||
+        (in_array('mas5000', $preciosFiltro) && $precio > 5000);
+
+    return $matchCategoria && $matchMarca && $matchSerie && $matchEscala && $matchPrecio;
+});
+
+if ($ordenFiltro === 'az') {
+    usort($productos, fn($a, $b) => strcmp($a['nombre'], $b['nombre']));
+} elseif ($ordenFiltro === 'za') {
+    usort($productos, fn($a, $b) => strcmp($b['nombre'], $a['nombre']));
+}
+
+$productos = array_values($productos); // Reindexar
+
+$nextStart = !$hayFiltros ? ($productos[$limite - 1]['fecha_subida'] ?? null) : null;
+$mostrarBotonVerMas = !$hayFiltros && count($productos) >= $limite;
+
+$categorias = obtenerCategorias();
+$marcas     = obtenerMarcas();
+$series     = obtenerSeries();
+$escalas    = obtenerEscalas();
 ?>
+
 
 <div class="container py-4">
   <h2 class="text-center mb-5">Productos en Preventa</h2>
@@ -45,6 +97,7 @@ $mostrarBotonVerMas = count($productos) >= $limite;
     <?php include('filtros-sidebar.php'); ?>
 
     <div class="col-md-9">
+      <?php if (!empty($productos)) : ?>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         <?php foreach ($productos as $producto): ?>
           <div class="col">
@@ -60,15 +113,16 @@ $mostrarBotonVerMas = count($productos) >= $limite;
             </div>
           </div>
         <?php endforeach; ?>
-
-        <!-- Si no hay preventas -->
-        <!-- <div class="col-12 text-center my-5 ps-4">
-          <img src="assets/img/not-found.png" alt="No encontrado">
-          <h3 class="mt-4">Ups! No hay coincidencias</h3>
-          <p>Intenta nuevamente :D</p>
-          <a href="productos.php" class="btn btn-noresult mt-3">Volver a todos los productos</a>
-        </div> -->
+        <?php else : ?>
+          <div class="d-flex flex-column justify-content-center align-items-center text-center w-100" style="min-height: 400px;">
+            <img src="assets/img/not-found.png" alt="No encontrado" class="mb-4" style="max-width: 200px;">
+            <h2 class="text-danger mb-3">Ups! No hay coincidencias</h2>
+            <p class="mb-4">Intenta ajustar tus filtros o realizar otra búsqueda.</p>
+            <a href="preventas.php" class="btn btn-noresult">Volver a todos los productos</a>
+          </div>
+      <?php endif; ?>
       </div>
+
       <div class="text-center my-5 d-flex justify-content-center gap-3 flex-wrap">
         <!-- Botón para volver al principio (recarga limpia) -->
         <a href="preventas.php" class="btn btn-outline-secondary">
@@ -101,7 +155,8 @@ $productosBusqueda = obtenerProductosParaBusqueda();
 $datosParaJS = array_map(function($p) {
   return [
     'id' => $p['id'],
-    'nombre' => $p['nombre']
+    'nombre' => $p['nombre'],
+    'imagen' => $p['imagenes'][0] ?? 'assets/img/default.png'
   ];
 }, $productosBusqueda);
 ?>

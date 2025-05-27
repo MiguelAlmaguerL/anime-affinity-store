@@ -99,7 +99,8 @@ $productosBusqueda = obtenerProductosParaBusqueda();
 $datosParaJS = array_map(function($p) {
   return [
     'id' => $p['id'],
-    'nombre' => $p['nombre']
+    'nombre' => $p['nombre'],
+    'imagen' => $p['imagenes'][0] ?? 'assets/img/default.png'
   ];
 }, $productosBusqueda);
 ?>
@@ -107,6 +108,12 @@ $datosParaJS = array_map(function($p) {
   const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
 </script>
 <?php include('footer.php'); ?>
+
+<!-- Lightbox para mostrar imagen en grande -->
+<div id="lightbox-overlay" class="lightbox-overlay">
+  <span id="lightbox-close" class="lightbox-close">&times;</span>
+  <img id="lightbox-img" class="lightbox-img" src="" alt="Imagen ampliada">
+</div>
 
 </body>
 </html>

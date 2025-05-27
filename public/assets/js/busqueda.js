@@ -25,8 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
           resultados.style.display = 'block';
           filtrados.forEach(producto => {
             const li = document.createElement('li');
-            li.textContent = producto.nombre;
             li.classList.add('list-group-item');
+            li.innerHTML = `
+              <div class="sugerencia-contenido">
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="sugerencia-imagen">
+                <span>${producto.nombre}</span>
+              </div>
+            `;
             resultados.appendChild(li);
 
             li.addEventListener('click', () => {
@@ -110,8 +115,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (filtrados.length > 0) {
           filtrados.forEach(producto => {
             const li = document.createElement('li');
-            li.textContent = producto.nombre;
             li.classList.add('list-group-item');
+            li.innerHTML = `
+              <div class="sugerencia-contenido">
+                <img src="${producto.imagen}" alt="${producto.nombre}" class="sugerencia-imagen">
+                <span>${producto.nombre}</span>
+              </div>
+            `;
             resultadosMobile.appendChild(li);
 
             li.addEventListener('click', () => {

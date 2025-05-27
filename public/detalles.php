@@ -50,9 +50,9 @@ if (!$producto) {
       </div>
 
       <!-- Miniaturas -->
-      <div class="carousel-thumbnails">
+      <div class="carousel-thumbnails" style="display: flex; overflow-x: auto; gap: 8px; padding: 8px 0;">
         <?php foreach ($producto['imagenes'] as $index => $img): ?>
-          <img src="<?= htmlspecialchars($img) ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>">
+          <img src="<?= htmlspecialchars($img) ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>" style="flex: 0 0 auto; width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
         <?php endforeach; ?>
       </div>
     </div>

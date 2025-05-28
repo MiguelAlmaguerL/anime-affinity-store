@@ -1,3 +1,4 @@
+//Miguel estuvo aqui
 <?php
 session_start();
 require_once __DIR__ . '/../includes/firebase_fetch.php';

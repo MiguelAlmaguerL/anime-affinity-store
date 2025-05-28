@@ -48,12 +48,15 @@ $estados = [
       </div>
 
       <div class="col-md-4 mb-3">
-        <label>Categoría:</label>
-        <select name="categoria" class="form-control" required>
-          <?php foreach ($categorias as $c): ?>
-            <option value="<?= $c['id'] ?>"><?= $c['nombre'] ?></option>
-          <?php endforeach; ?>
-        </select>
+        <label for="selectCategoria" class="form-label">Categoría:</label>
+        <div class="input-group">
+          <select name="categoria" id="selectCategoria" class="form-control" required>
+            <?php foreach ($categorias as $c): ?>
+              <option value="<?= $c['id'] ?>"><?= $c['nombre'] ?></option>
+            <?php endforeach; ?>
+          </select>
+          <button type="button" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#modalAgregarCategoria" title="Agregar categoría">+</button>
+        </div>
       </div>
 
       <div class="col-md-4 mb-3">
@@ -108,15 +111,30 @@ $estados = [
     <a href="productos.php" class="btn btn-secondary">Cancelar</a>
   </form>
 </div>
-</body>
-</html>
 
+  <!-- Modal Agregar Categoría -->
+  <div class="modal fade" id="modalAgregarCategoria" tabindex="-1" aria-labelledby="modalAgregarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form id="formAgregarCategoria" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAgregarCategoriaLabel">Agregar nueva categoría</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="nombre_categoria" id="nombre_categoria" class="form-control" placeholder="Nombre de la nueva categoría" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<!-- VALIDACIÓN de formulario -->
 <script>
-  // Verifica que los campos obligatorios estén llenos y muestra un cuadro de confirmación antes de enviar el formulario
   document.querySelector("form").addEventListener("submit", function(e) {
     const form = e.target;
-
-    // Verificar que todos los campos obligatorios estén llenos manualmente
     const nombre = form.nombre.value.trim();
     const precio = form.precio.value.trim();
     const descripcion = form.descripcion.value.trim();
@@ -131,30 +149,22 @@ $estados = [
       return;
     }
 
-    // Mostrar cuadro de confirmación
-    const confirmar = confirm("¿Estás seguro de que deseas subir este producto?");
-    if (!confirmar) {
-      e.preventDefault(); // Detener envío
+    if (!confirm("¿Estás seguro de que deseas subir este producto?")) {
+      e.preventDefault();
     }
   });
 </script>
 
+<!-- PREVISUALIZACIÓN de imágenes -->
 <script>
-  // Muestra una vista previa de las imágenes seleccionadas antes de enviarlas
   const inputImagenes = document.getElementById("input-imagenes");
   const previewContainer = document.getElementById("preview-imagenes");
 
   inputImagenes.addEventListener("change", function () {
-    // Limpiar vista previa anterior
     previewContainer.innerHTML = "";
-
     const files = inputImagenes.files;
-
-    if (files.length === 0) return;
-
     for (const file of files) {
       if (!file.type.startsWith("image/")) continue;
-
       const reader = new FileReader();
       reader.onload = function (e) {
         const img = document.createElement("img");
@@ -164,10 +174,52 @@ $estados = [
         img.style.height = "100px";
         img.style.objectFit = "cover";
         img.classList.add("rounded", "shadow");
-
         previewContainer.appendChild(img);
       };
       reader.readAsDataURL(file);
     }
   });
 </script>
+
+<!-- AGREGAR CATEGORÍA -->
+<script>
+  document.getElementById('formAgregarCategoria').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre_categoria').value.trim();
+    if (nombre === '') {
+      alert("Por favor, escribe un nombre.");
+      return;
+    }
+
+    console.log("ENVIANDO:", JSON.stringify({ nombre }));
+
+    fetch('ajax/agregar_categoria.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const select = document.getElementById('selectCategoria');
+        const option = new Option(data.nombre, data.id, true, true);
+        select.add(option);
+        document.getElementById('nombre_categoria').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalAgregarCategoria')).hide();
+      } else {
+        console.error("Respuesta completa del servidor:", data);
+        alert("❌ Error: " + (data.error || "No se pudo guardar la categoría."));
+
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("🔥 Error inesperado al conectar con el servidor. Revisa la consola.");
+    });
+  });
+</script>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

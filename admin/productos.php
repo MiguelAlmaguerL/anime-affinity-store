@@ -1,4 +1,3 @@
-//Miguel estuvo aqui
 <?php
 session_start();
 require_once __DIR__ . '/../includes/firebase_fetch.php';
@@ -53,12 +52,12 @@ $productos = obtenerProductosPaginados(21); // Limite de 21 productos para la ta
                     <td>$<?= number_format($producto['precio'], 2) ?> MXN</td>
                     <td>
                         <?php
-                            // Mostrar un estado legible
-                        if (strpos($producto['estado'], 'inventario') !== false) echo 'Disponible';
-                        elseif (strpos($producto['estado'], 'preventa') !== false) echo 'Preventa';
-                        elseif (strpos($producto['estado'], 'en-camino') !== false) echo 'En Camino';
-                        elseif (strpos($producto['estados'], 'sin-existencia') !== false) echo 'Sin Existencia';
-                        else echo 'Otro';
+                            // Mostrar un estado legible en la tabla
+                            if (strpos($producto['estado'], 'inventario') !== false) echo 'Disponible';
+                                elseif (strpos($producto['estado'], 'preventa') !== false) echo 'Preventa';
+                                elseif (strpos($producto['estado'], 'en-camino') !== false) echo 'En Camino';
+                                elseif (strpos($producto['estado'], 'sin-existencia') !== false) echo 'Sin Existencia';
+                            else echo 'Otro';
                         ?>
                     </td>
                     <td><?= date('Y-m-d', strtotime($producto['fecha_subida'] ?? 'now')) ?></td>

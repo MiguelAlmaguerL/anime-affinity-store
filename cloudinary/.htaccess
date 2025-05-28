@@ -1,0 +1,4 @@
+# Denegar el acceso web a todos los archivos PHP
+<Files *.php>
+  Deny from all
+</Files>

@@ -1,11 +1,7 @@
-// Cloudinary credentials
-$cloud_name = 'dvhn2jmm5';
-$api_key = '658467635226354';
-$api_secret = 'oWTY3dyJnhzRh0LFh49iDi_F5TQ';
-
 <?php
 session_start();
 require_once __DIR__ . '/../includes/firebase_fetch.php';
+require_once __DIR__ . '/../cloudinary/cloudinary_config.php';
 
 if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true) {
     header('Location: login.php');
@@ -13,9 +9,9 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 }
 
 // Cloudinary config
-$cloud_name = 'dvhn2jmm5';
-$api_key = '658467635226354';
-$api_secret = 'oWTY3dyJnhzRh0LFh49iDi_F5TQ';
+$cloud_name = '...';
+$api_key = '...';
+$api_secret = '...';
 
 // Procesar campos del formulario
 $nombre = $_POST['nombre'] ?? '';
@@ -43,7 +39,7 @@ foreach ($_FILES['imagenes']['tmp_name'] as $index => $tmpName) {
             'timestamp' => $timestamp,
         ];
 
-        // Crear la firma
+        // Crear la firma para la solicitud
         ksort($params_to_sign);
         $signature_base = http_build_query($params_to_sign) . $api_secret;
         $signature = sha1($signature_base);
@@ -73,7 +69,6 @@ foreach ($_FILES['imagenes']['tmp_name'] as $index => $tmpName) {
         }
     }
 }
-
 
 // Construir el documento para Firebase
 $producto = [

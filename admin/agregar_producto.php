@@ -15,9 +15,11 @@ $escalas = obtenerEscalas();
 $estados = [
     ['id' => 'inventario', 'nombre' => 'Disponible'],
     ['id' => 'preventa', 'nombre' => 'Preventa'],
-    ['id' => 'camino', 'nombre' => 'En camino']
+    ['id' => 'en-camino', 'nombre' => 'En camino'],
+    ['id'=> 'sin-exitencia', 'nombre'=> 'Sin existencia']
 ];
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -97,7 +99,8 @@ $estados = [
 
       <div class="col-md-6 mb-3">
         <label>Imágenes del producto:</label>
-        <input type="file" name="imagenes[]" class="form-control" accept="image/*" multiple required>
+        <input type="file" name="imagenes[]" id="input-imagenes" class="form-control" accept="image/*" multiple required>
+        <div id="preview-imagenes" class="mt-3 d-flex flex-wrap gap-2"></div>
       </div>
     </div>
 
@@ -107,3 +110,64 @@ $estados = [
 </div>
 </body>
 </html>
+
+<script>
+  // Verifica que los campos obligatorios estén llenos y muestra un cuadro de confirmación antes de enviar el formulario
+  document.querySelector("form").addEventListener("submit", function(e) {
+    const form = e.target;
+
+    // Verificar que todos los campos obligatorios estén llenos manualmente
+    const nombre = form.nombre.value.trim();
+    const precio = form.precio.value.trim();
+    const descripcion = form.descripcion.value.trim();
+    const categoria = form.categoria.value;
+    const marca = form.marca.value;
+    const estado = form.estado.value;
+    const imagenes = form['imagenes[]'].files;
+
+    if (!nombre || !precio || !descripcion || !categoria || !marca || !estado || imagenes.length === 0) {
+      alert("Por favor, llena todos los campos obligatorios e incluye al menos una imagen.");
+      e.preventDefault();
+      return;
+    }
+
+    // Mostrar cuadro de confirmación
+    const confirmar = confirm("¿Estás seguro de que deseas subir este producto?");
+    if (!confirmar) {
+      e.preventDefault(); // Detener envío
+    }
+  });
+</script>
+
+<script>
+  // Muestra una vista previa de las imágenes seleccionadas antes de enviarlas
+  const inputImagenes = document.getElementById("input-imagenes");
+  const previewContainer = document.getElementById("preview-imagenes");
+
+  inputImagenes.addEventListener("change", function () {
+    // Limpiar vista previa anterior
+    previewContainer.innerHTML = "";
+
+    const files = inputImagenes.files;
+
+    if (files.length === 0) return;
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) continue;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Vista previa";
+        img.style.width = "100px";
+        img.style.height = "100px";
+        img.style.objectFit = "cover";
+        img.classList.add("rounded", "shadow");
+
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>

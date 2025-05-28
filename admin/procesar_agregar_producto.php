@@ -8,11 +8,6 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
     exit;
 }
 
-// Cloudinary config
-$cloud_name = '...';
-$api_key = '...';
-$api_secret = '...';
-
 // Procesar campos del formulario
 $nombre = $_POST['nombre'] ?? '';
 $descripcion = $_POST['descripcion'] ?? '';
@@ -29,31 +24,29 @@ $fechaSubida = date('c'); // Formato ISO 8601
 $imagenes = [];
 
 foreach ($_FILES['imagenes']['tmp_name'] as $index => $tmpName) {
-    // Validar que sea un archivo valido
     if ($_FILES['imagenes']['error'][$index] === UPLOAD_ERR_OK && is_uploaded_file($tmpName)) {
         $filePath = $tmpName;
         $fileName = $_FILES['imagenes']['name'][$index];
         $timestamp = time();
 
-        $params_to_sign = [
-            'timestamp' => $timestamp,
-        ];
-
-        // Crear la firma para la solicitud
+        // Crear firma
+        $params_to_sign = ['timestamp' => $timestamp];
         ksort($params_to_sign);
-        $signature_base = http_build_query($params_to_sign) . $api_secret;
+        $signature_base = http_build_query($params_to_sign) . CLOUDINARY_API_SECRET;
         $signature = sha1($signature_base);
 
+        // Parámetros del POST
         $post = [
             'file' => new CURLFile($filePath),
-            'api_key' => $api_key,
+            'api_key' => CLOUDINARY_API_KEY,
             'timestamp' => $timestamp,
             'signature' => $signature
+            //'folder' => 'productos', // => carpeta donde se guardarán las imágenes
         ];
 
-        // Ejecutar CURL
+        // Ejecutar cURL
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.cloudinary.com/v1_1/{$cloud_name}/image/upload");
+        curl_setopt($ch, CURLOPT_URL, "https://api.cloudinary.com/v1_1/" . CLOUDINARY_CLOUD_NAME . "/image/upload");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
@@ -62,10 +55,11 @@ foreach ($_FILES['imagenes']['tmp_name'] as $index => $tmpName) {
         curl_close($ch);
 
         $json = json_decode($response, true);
+
         if (isset($json['secure_url'])) {
             $imagenes[] = $json['secure_url'];
         } else {
-            echo "<p style='color:red;'>❌ Error al subir imagen $fileName: " . htmlspecialchars($json['error']['message'] ?? 'desconocido') . "</p>";
+            echo "<p style='color:red;'>❌ Error al subir imagen <strong>$fileName</strong>: " . htmlspecialchars($json['error']['message'] ?? 'desconocido') . "</p>";
         }
     }
 }

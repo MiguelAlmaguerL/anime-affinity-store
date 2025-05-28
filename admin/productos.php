@@ -1,10 +1,12 @@
 <?php
 session_start();
+require_once __DIR__ . '/../includes/firebase_fetch.php';
 
 if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true) {
     header('Location: login.php');
     exit;
 }
+$productos = obtenerProductosPaginados(21); // Limite de 21 productos para la tabla
 ?>
 
 <!DOCTYPE html>
@@ -40,19 +42,32 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
                 </tr>
             </thead>
             <tbody>
-                <!-- 🔻 Productos renderizados dinámicamente -->
+            <?php foreach ($productos as $producto): ?>
                 <tr>
-                    <td><img src="../assets/img/ejemplo1.png" width="80" class="img-thumbnail" alt="Producto"></td>
-                    <td>Zoro Roronoa</td>
-                    <td>$1,199.00 MXN</td>
-                    <td>Disponible</td>
-                    <td>2024-05-09</td>
                     <td>
-                        <a href="editar_producto.php?id=123" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="eliminar_producto.php?id=123" class="btn btn-sm btn-danger">Eliminar</a>
+                        <img src="<?= htmlspecialchars($producto['imagenes'][0] ?? '../assets/img/default.png') ?>"
+                        width="80" class="img-thumbnail" alt=" ">
+                    </td>
+                    <td><?= htmlspecialchars($producto['nombre']) ?></td>
+                    <td>$<?= number_format($producto['precio'], 2) ?> MXN</td>
+                    <td>
+                        <?php
+                            // Mostrar un estado legible
+                        if (strpos($producto['estado'], 'inventario') !== false) echo 'Disponible';
+                        elseif (strpos($producto['estado'], 'preventa') !== false) echo 'Preventa';
+                        elseif (strpos($producto['estado'], 'en-camino') !== false) echo 'En Camino';
+                        elseif (strpos($producto['estados'], 'sin-existencia') !== false) echo 'Sin Existencia';
+                        else echo 'Otro';
+                        ?>
+                    </td>
+                    <td><?= date('Y-m-d', strtotime($producto['fecha_subida'] ?? 'now')) ?></td>
+                    <td>
+                        <a href="editar_producto.php?id=<?= urlencode($producto['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="eliminar_producto.php?id=<?= urlencode($producto['id']) ?>" class="btn btn-sm btn-danger"
+                        onclick="return confirm('¿Estás seguro de eliminar este producto?');">Eliminar</a>
                     </td>
                 </tr>
-                <!-- Más productos aquí -->
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>

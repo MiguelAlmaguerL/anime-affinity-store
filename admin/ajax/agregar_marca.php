@@ -20,8 +20,8 @@ if ($nombre === '') {
 // Slug
 function generarSlug($texto) {
     $slug = strtolower($texto);
-    $slug = iconv('UTF-8', 'ASCII//TRANSLIT', $slug); // Quita acentos
-    $slug = preg_replace('/[^a-z0-9]+/', '-', $slug); // Solo guiones
+    $slug = iconv('UTF-8', 'ASCII//TRANSLIT', $slug);
+    $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
     return trim($slug, '-');
 }
 
@@ -29,7 +29,7 @@ $slug = generarSlug($nombre);
 
 // URL con documentId
 $projectId = 'affinityanimestore';
-$url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/categorias?documentId={$slug}";
+$url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/marcas?documentId={$slug}";
 $accessToken = getAccessToken(__DIR__ . '/../../firebase/affinityanimestore-firebase-adminsdk-fbsvc-7a1a2b791b.json');
 
 $headers = [
@@ -39,7 +39,7 @@ $headers = [
 
 $body = json_encode([
     'fields' => [
-        'nombre' => [ 'stringValue' => $nombre ]
+        'nombre' => ['stringValue' => $nombre]
     ]
 ]);
 
@@ -72,7 +72,7 @@ $data = json_decode($response, true);
 if (isset($data['error']['status']) && $data['error']['status'] === 'ALREADY_EXISTS') {
     echo json_encode([
         'success' => false,
-        'error' => 'Ya existe una categoría con ese nombre.'
+        'error' => 'Ya existe una marca con ese nombre.'
     ]);
     exit;
 }

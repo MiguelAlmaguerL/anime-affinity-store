@@ -6,7 +6,7 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
     header('Location: login.php');
     exit;
 }
-$productos = obtenerProductosPaginados(21); // Limite de 21 productos para la tabla
+$productos = obtenerProductosPaginados(10); // Limite de 10 productos para la tabla
 ?>
 
 <!DOCTYPE html>

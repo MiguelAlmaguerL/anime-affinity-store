@@ -16,7 +16,7 @@ $estados = [
     ['id' => 'inventario', 'nombre' => 'Disponible'],
     ['id' => 'preventa', 'nombre' => 'Preventa'],
     ['id' => 'en-camino', 'nombre' => 'En camino'],
-    ['id'=> 'sin-exitencia', 'nombre'=> 'Sin existencia']
+    ['id'=> 'sin-existencia', 'nombre'=> 'Sin existencia']
 ];
 ?>
 
@@ -60,30 +60,39 @@ $estados = [
       </div>
 
       <div class="col-md-4 mb-3">
-        <label>Marca:</label>
-        <select name="marca" class="form-control" required>
-          <?php foreach ($marcas as $m): ?>
-            <option value="<?= $m['id'] ?>"><?= $m['nombre'] ?></option>
-          <?php endforeach; ?>
-        </select>
+        <label for="selectMarca" class="form-label">Marca:</label>
+        <div class="input-group">
+          <select name="marca" id="selectMarca" class="form-control" required>
+            <?php foreach ($marcas as $m): ?>
+              <option value="<?= $m['id'] ?>"><?= $m['nombre'] ?></option>
+            <?php endforeach; ?>
+          </select>
+          <button type="button" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#modalAgregarMarca" title="Agregar marca">+</button>
+        </div>
       </div>
 
       <div class="col-md-4 mb-3">
-        <label>Serie:</label>
-        <select name="serie" class="form-control">
-          <?php foreach ($series as $s): ?>
-            <option value="<?= $s['id'] ?>"><?= $s['nombre'] ?></option>
-          <?php endforeach; ?>
-        </select>
+        <label for="selectSerie" class="form-label">Serie:</label>
+        <div class="input-group">
+          <select name="serie" id="selectSerie" class="form-control">
+            <?php foreach ($series as $s): ?>
+              <option value="<?= $s['id'] ?>"><?= $s['nombre'] ?></option>
+            <?php endforeach; ?>
+          </select>
+          <button type="button" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#modalAgregarSerie" title="Agregar serie">+</button>
+        </div>
       </div>
 
       <div class="col-md-6 mb-3">
-        <label>Escala:</label>
-        <select name="escala" class="form-control">
-          <?php foreach ($escalas as $e): ?>
-            <option value="<?= $e['id'] ?>"><?= $e['nombre'] ?></option>
-          <?php endforeach; ?>
-        </select>
+        <label for="selectEscala" class="form-label">Escala:</label>
+        <div class="input-group">
+          <select name="escala" id="selectEscala" class="form-control">
+            <?php foreach ($escalas as $e): ?>
+              <option value="<?= $e['id'] ?>"><?= $e['nombre'] ?></option>
+            <?php endforeach; ?>
+          </select>
+          <button type="button" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#modalAgregarEscala" title="Agregar escala">+</button>
+        </div>
       </div>
 
       <div class="col-md-6 mb-3">
@@ -130,6 +139,63 @@ $estados = [
       </form>
     </div>
   </div>
+
+  <!-- Modal Agregar Marca -->
+<div class="modal fade" id="modalAgregarMarca" tabindex="-1" aria-labelledby="modalAgregarMarcaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="formAgregarMarca" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarMarcaLabel">Agregar nueva marca</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="nombre_marca" id="nombre_marca" class="form-control" placeholder="Nombre de la nueva marca" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Agregar Serie -->
+<div class="modal fade" id="modalAgregarSerie" tabindex="-1" aria-labelledby="modalAgregarSerieLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="formAgregarSerie" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarSerieLabel">Agregar nueva serie</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="nombre_serie" id="nombre_serie" class="form-control" placeholder="Nombre de la nueva serie" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Agregar Escala -->
+<div class="modal fade" id="modalAgregarEscala" tabindex="-1" aria-labelledby="modalAgregarEscalaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form id="formAgregarEscala" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarEscalaLabel">Agregar nueva escala</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="valor_escala" id="valor_escala" class="form-control" placeholder="Ej: 1/7 o 1/12" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- VALIDACIÓN de formulario -->
 <script>
@@ -214,7 +280,108 @@ $estados = [
     })
     .catch(error => {
       console.error("Error en la solicitud:", error);
-      alert("🔥 Error inesperado al conectar con el servidor. Revisa la consola.");
+      alert("Error inesperado al conectar con el servidor. Revisa la consola.");
+    });
+  });
+
+  // AGREGAR MARCA
+  document.getElementById('formAgregarMarca').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre_marca').value.trim();
+    if (nombre === '') return alert("Por favor, escribe un nombre.");
+
+    console.log("Enviando nombre:", nombre);
+
+    fetch('ajax/agregar_marca.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const select = document.getElementById('selectMarca');
+        const option = new Option(data.nombre, data.id, true, true);
+        select.add(option);
+        document.getElementById('nombre_marca').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalAgregarMarca')).hide();
+      } else {
+        alert("❌ Error: " + (data.error || "No se pudo guardar la marca."));
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("Error inesperado al conectar con el servidor. Revisa la consola.");
+    });
+  });
+
+// AGREGAR SERIE
+  document.getElementById('formAgregarSerie').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre_serie').value.trim();
+    if (nombre === '') return alert("Por favor, escribe un nombre.");
+
+    console.log("Enviando nombre:", nombre); 
+
+    fetch('ajax/agregar_serie.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const select = document.getElementById('selectSerie');
+        const option = new Option(data.nombre, data.id, true, true);
+        select.add(option);
+        document.getElementById('nombre_serie').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalAgregarSerie')).hide();
+      } else {
+        alert("❌ Error: " + (data.error || "No se pudo guardar la serie."));
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("Error inesperado al conectar con el servidor. Revisa la consola.");
+    });
+  });
+
+  // AGREGAR ESCALA
+  document.getElementById('formAgregarEscala').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const valor = document.getElementById('valor_escala').value.trim();
+    if (valor === '') return alert("Por favor, escribe un valor como 1/7 o 1/12.");
+
+    // Validar formato tipo 1/7, 1/12, etc.
+    const formatoEscala = /^\d{1,2}\/\d{1,2}$/;
+    if (!formatoEscala.test(valor)) {
+      alert("El formato debe ser como 1/7, 1/12, 6/10, etc.");
+      return;
+    }
+
+    console.log("Enviando escala:", valor);
+
+    fetch('ajax/agregar_escala.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valor })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const select = document.getElementById('selectEscala');
+        const option = new Option(data.valor, data.id, true, true);
+        select.add(option);
+        document.getElementById('valor_escala').value = '';
+        bootstrap.Modal.getInstance(document.getElementById('modalAgregarEscala')).hide();
+      } else {
+        alert("❌ Error: " + (data.error || "No se pudo guardar la escala."));
+        console.error("DEBUG:", data.debug || data);
+      }
+    })
+    .catch(error => {
+      console.error("Error en la solicitud:", error);
+      alert("Error inesperado al conectar con el servidor. Revisa la consola.");
     });
   });
 </script>

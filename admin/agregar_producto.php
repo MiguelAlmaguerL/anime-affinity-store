@@ -2,6 +2,9 @@
 session_start();
 require_once __DIR__ . '/../includes/firebase_fetch.php';
 
+$errorMensaje = $_SESSION['error_agregar_producto'] ?? null;
+unset($_SESSION['error_agregar_producto']);
+
 if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true) {
     header('Location: login.php');
     exit;
@@ -29,6 +32,12 @@ $estados = [
 </head>
 <body class="bg-light">
 <div class="container mt-5">
+  <?php if ($errorMensaje): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <?= htmlspecialchars($errorMensaje) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+  <?php endif; ?>
   <h2 class="mb-4">Agregar Nuevo Producto</h2>
   <form action="procesar_agregar_producto.php" method="POST" enctype="multipart/form-data">
     <div class="row">
@@ -39,7 +48,7 @@ $estados = [
 
       <div class="col-md-6 mb-3">
         <label>Precio (MXN):</label>
-        <input type="number" step="0.01" name="precio" class="form-control" required>
+        <input type="number" step="0.01" name="precio" class="form-control" min="0" required>
       </div>
 
       <div class="col-md-12 mb-3">
@@ -202,7 +211,7 @@ $estados = [
   document.querySelector("form").addEventListener("submit", function(e) {
     const form = e.target;
     const nombre = form.nombre.value.trim();
-    const precio = form.precio.value.trim();
+    const precioNum = parseFloat(precio);
     const descripcion = form.descripcion.value.trim();
     const categoria = form.categoria.value;
     const marca = form.marca.value;
@@ -211,6 +220,12 @@ $estados = [
 
     if (!nombre || !precio || !descripcion || !categoria || !marca || !estado || imagenes.length === 0) {
       alert("Por favor, llena todos los campos obligatorios e incluye al menos una imagen.");
+      e.preventDefault();
+      return;
+    }
+
+    if (isNaN(precioNum) || precioNum < 0) {
+      alert("Por favor, ingresa un precio válido (número mayor o igual a cero).");
       e.preventDefault();
       return;
     }

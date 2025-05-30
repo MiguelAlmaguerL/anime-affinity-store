@@ -12,6 +12,12 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 $nombre = $_POST['nombre'] ?? '';
 $descripcion = $_POST['descripcion'] ?? '';
 $precio = floatval($_POST['precio'] ?? 0);
+if ($precio < 0) {
+    $_SESSION['error_agregar_producto'] = "❌ El precio no puede ser negativo.";
+    header('Location: agregar_producto.php');
+    exit;
+}
+
 $categoria = $_POST['categoria'] ?? '';
 $marca = $_POST['marca'] ?? '';
 $serie = $_POST['serie'] ?? '';

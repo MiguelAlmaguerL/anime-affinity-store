@@ -6,7 +6,26 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
     header('Location: login.php');
     exit;
 }
-$productos = obtenerProductosPaginados(4); // Limite de 10 productos para la tabla
+
+// Capturar búsqueda
+$busqueda = isset($_GET['q']) ? trim($_GET['q']) : '';
+$limite = 21;
+
+// Capturar paginación
+$startAfter = isset($_GET['after']) ? $_GET['after'] : null;
+
+if ($busqueda !== '') {
+    // Usar búsqueda local (hasta 250) y filtrar manualmente
+    $todosLosProductos = obtenerProductosParaBusqueda(250);
+    $productos = array_filter($todosLosProductos, function ($p) use ($busqueda) {
+        return stripos($p['nombre'], $busqueda) !== false;
+    });
+    $mostrarBotonVerMas = false;  // No hay paginación en búsqueda
+} else {
+    // Sin búsqueda: usar paginación normal
+    $productos = obtenerProductosPaginados($limite, $startAfter);
+    $mostrarBotonVerMas = count($productos) === $limite;
+}
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +58,14 @@ $productos = obtenerProductosPaginados(4); // Limite de 10 productos para la tab
         <h2>Gestión de Productos</h2>
         <a href="dashboard.php" class="btn btn-outline-secondary">← Volver</a>
     </div>
-
-    <div class="mb-3 text-end">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+        <form method="get" class="d-flex" style="max-width: 600px;">
+        <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($busqueda) ?>">
+        <button type="submit" class="btn btn-primary me-2">Buscar</button>
+        </form>
+        <a href="productos.php" class="btn btn-outline-secondary">← Ver desde el inicio</a>
+    </div>
         <a href="agregar_producto.php" class="btn btn-success">+ Agregar Producto</a>
     </div>
 
@@ -89,6 +114,11 @@ $productos = obtenerProductosPaginados(4); // Limite de 10 productos para la tab
             <?php endforeach; ?>
             </tbody>
         </table>
+        <?php if ($mostrarBotonVerMas): ?>
+            <div class="text-center my-3">
+                <a href="?after=<?= urlencode($productos[$limite - 1]['fecha_subida']) ?>" class="btn btn-outline-primary">Ver más</a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

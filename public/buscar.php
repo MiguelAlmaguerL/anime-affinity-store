@@ -11,7 +11,7 @@ $preciosFiltro     = $_GET['precio'] ?? [];
 $ordenFiltro       = $_GET['orden'] ?? '';
 
 // 2. Traer productos con todos los campos necesarios
-$productos = obtenerProductosParaBusqueda(150);
+$productos = obtenerProductosParaBusqueda(250);
 
 // 3. Extraer los IDs de las referencias
 foreach ($productos as &$p) {

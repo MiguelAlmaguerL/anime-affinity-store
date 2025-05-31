@@ -37,7 +37,6 @@ if ($precio < 0) {
     exit;
 }
 
-
 // Función para extraer public_id
 function obtenerPublicIdDesdeUrl($url) {
     $partes = explode('/', parse_url($url, PHP_URL_PATH));

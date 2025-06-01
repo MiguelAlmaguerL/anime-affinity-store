@@ -35,7 +35,7 @@ if (isset($result['idToken'])) {
     // Opcional: Solo permitir acceso a ciertos correos
     $adminEmails = ['anime.affinity.store@gmail.com']; // Cambia esto por el correo de tu admin
     if (!in_array(strtolower($usuario), $adminEmails)) {
-        $_SESSION['error'] = 'No tienes permisos de administrador.';
+        $_SESSION['error'] = '⚠️​ No tienes permisos de administrador.';
         header('Location: login.php');
         exit;
     }
@@ -48,7 +48,7 @@ if (isset($result['idToken'])) {
     exit;
 } else {
     // Error de autenticación
-    $_SESSION['error'] = 'Usuario o contraseña incorrectos.';
+    $_SESSION['error'] = '❌ Usuario o contraseña incorrectos.';
     header('Location: login.php');
     exit;
 }

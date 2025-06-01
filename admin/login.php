@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <title>Iniciar sesión - Panel de Administración</title>
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body {
       background-color: #f8f9fa;
@@ -36,12 +37,29 @@
       </div>
       <div class="mb-3">
         <label for="contrasena" class="form-label">Contraseña</label>
-        <input type="password" name="contrasena" id="contrasena" class="form-control" required>
+        <div class="input-group">
+          <input type="password" name="contrasena" id="contrasena" class="form-control" required>
+          <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+            <i class="bi bi-eye" id="iconPassword"></i>
+          </button>
+        </div>
       </div>
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
       </div>
     </form>
   </div>
+
+  <script>
+  document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordInput = document.getElementById('contrasena');
+    const icon = document.getElementById('iconPassword');
+    const isPassword = passwordInput.type === 'password';
+
+    passwordInput.type = isPassword ? 'text' : 'password';
+    icon.classList.toggle('bi-eye');
+    icon.classList.toggle('bi-eye-slash');
+  });
+</script>
 </body>
 </html>

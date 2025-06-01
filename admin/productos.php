@@ -56,7 +56,8 @@ if ($busqueda !== '') {
         <?php endif; ?>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestión de Productos</h2>
-        <a href="dashboard.php" class="btn btn-outline-secondary">← Volver</a>
+        <a href="logout.php" class="btn btn-danger">Cerrar Sesión</a>
+        <!-- <a href="dashboard.php" class="btn btn-outline-secondary">← Volver</a> -->
     </div>
     <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center">
@@ -71,26 +72,26 @@ if ($busqueda !== '') {
 
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">
-            <thead class="table-dark">
+            <thead class="table-dark align-middle">
                 <tr>
-                    <th>Imagen</th>
+                    <th class="text-center align-middle">Imagen</th>
                     <th>Nombre</th>
-                    <th>Precio</th>
-                    <th>Estado</th>
-                    <th>Fecha de Subida</th>
-                    <th>Acciones</th>
+                    <th class="text-center align-middle">Precio</th>
+                    <th class="text-center align-middle">Estado</th>
+                    <th class="text-center align-middle">Fecha de Subida</th>
+                    <th class="text-center align-middle">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             <?php foreach ($productos as $producto): ?>
                 <tr>
-                    <td>
+                    <td class="text-center">
                         <img src="<?= htmlspecialchars($producto['imagenes'][0] ?? '../assets/img/default.png') ?>"
                         width="80" class="img-thumbnail" alt=" ">
                     </td>
                     <td><?= htmlspecialchars($producto['nombre']) ?></td>
-                    <td>$<?= number_format($producto['precio'], 2) ?> MXN</td>
-                    <td>
+                    <td class="text-center">$<?= number_format($producto['precio'], 2) ?> MXN</td>
+                    <td class="text-center">
                         <?php
                             // Mostrar un estado legible en la tabla
                             if (strpos($producto['estado'], 'inventario') !== false) echo 'Disponible';
@@ -100,15 +101,16 @@ if ($busqueda !== '') {
                             else echo 'Otro';
                         ?>
                     </td>
-                    <td><?= date('Y-m-d', strtotime($producto['fecha_subida'] ?? 'now')) ?></td>
+                    <td class="text-center"><?= date('Y-m-d', strtotime($producto['fecha_subida'] ?? 'now')) ?></td>
                     <td>
-                        <a href="editar_producto.php?id=<?= urlencode($producto['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <button class="btn btn-sm btn-danger btn-confirmar-eliminar" 
-                            data-id="<?= $producto['id'] ?>" 
-                            data-nombre="<?= htmlspecialchars($producto['nombre']) ?>">
-                            Eliminar
-                        </button>
-
+                        <div class="d-flex gap-2">
+                            <a href="editar_producto.php?id=<?= urlencode($producto['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
+                            <button class="btn btn-sm btn-danger btn-confirmar-eliminar"
+                                data-id="<?= $producto['id'] ?>" 
+                                data-nombre="<?= htmlspecialchars($producto['nombre']) ?>">
+                                Eliminar
+                            </button>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -144,6 +146,7 @@ if ($busqueda !== '') {
 <!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Script para manejar el modal de eliminación -->
 <script>
   const modalEliminar = new bootstrap.Modal(document.getElementById('modalConfirmarEliminar'));
   const botonesEliminar = document.querySelectorAll('.btn-confirmar-eliminar');

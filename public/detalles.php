@@ -8,6 +8,18 @@ if (!$idProducto) {
   exit;
 }
 
+// Función para obtener el nombre del estado del producto
+function nombreEstado($idEstado) {
+  $estados = [
+    'inventario' => 'En existencia',
+    'preventa' => 'Preventa',
+    'en-camino' => 'En camino',
+    'sin-existencia' => 'Sin existencia'
+  ];
+
+  return $estados[$idEstado] ?? $idEstado;
+}
+
 // Obtener el producto por ID
 $producto = obtenerProductoPorID($idProducto);
 if (!$producto) {
@@ -60,7 +72,7 @@ if (!$producto) {
     <!-- Detalles del producto -->
     <div class="col-md-7">
       <h2><?= htmlspecialchars($producto['nombre']) ?></h2>
-      <p class="text-muted"><?= htmlspecialchars($producto['estado'] ?? 'Sin estado') ?></p>
+      <p class="text-muted"><?= nombreEstado($producto['estado'] ?? 'Sin estado') ?></p>
       <h4 class="text-danger">$<?= number_format($producto['precio'], 2) ?> MXN</h4>
       <p><?= htmlspecialchars($producto['descripcion']) ?></p>
       <ul>

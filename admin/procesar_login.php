@@ -12,7 +12,7 @@ $contrasena = $_POST['contrasena'] ?? '';
 // ✅ Validar credenciales
 if ($usuario === $usuario_valido && $contrasena === $contrasena_valida) {
     $_SESSION['admin_logueado'] = true;
-    header('Location: dashboard.php');
+    header('Location: productos.php');
     exit;
 } else {
     $_SESSION['error'] = 'Usuario o contraseña incorrectos.';

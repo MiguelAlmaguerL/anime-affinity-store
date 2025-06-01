@@ -395,7 +395,6 @@ function obtenerProductosParaBusqueda($limite = 250) {
 function obtenerProductoPorId($id) {
     global $accessToken, $projectId;
 
-    // Obtener documento del producto
     $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/productos/{$id}";
     $headers = [
         "Authorization: Bearer $accessToken",
@@ -417,14 +416,13 @@ function obtenerProductoPorId($id) {
 
     $fields = $doc['fields'];
 
-    // Función para resolver una referencia con formato corto (ej: "estados/inventario")
+    // 🔄 Resolver referencias a otras colecciones
     $resolverReferencia = function($refPath) use ($accessToken, $projectId) {
         if (!$refPath) return null;
 
-        // Detectar si ya viene en formato completo o no
         $ruta = str_starts_with($refPath, 'projects/')
-        ? $refPath
-        : "projects/{$projectId}/databases/(default)/documents/{$refPath}";
+            ? $refPath
+            : "projects/{$projectId}/databases/(default)/documents/{$refPath}";
 
         $url = "https://firestore.googleapis.com/v1/{$ruta}";
         $headers = [
@@ -448,6 +446,11 @@ function obtenerProductoPorId($id) {
         }
     };
 
+    // 🔍 Extraer ID del documento desde referenceValue (ej: "estados/sin-existencia")
+    $extraerIdDeReferencia = function($ref) {
+        $partes = explode('/', $ref);
+        return end($partes);
+    };
 
     return [
         'id' => $id,
@@ -470,7 +473,7 @@ function obtenerProductoPorId($id) {
             ? $resolverReferencia($fields['escalasID']['referenceValue'])
             : null,
         'estado' => isset($fields['estadosID']['referenceValue'])
-            ? $resolverReferencia($fields['estadosID']['referenceValue'])
+            ? $extraerIdDeReferencia($fields['estadosID']['referenceValue'])
             : null,
         'serie' => isset($fields['seriesID']['referenceValue'])
             ? $resolverReferencia($fields['seriesID']['referenceValue'])

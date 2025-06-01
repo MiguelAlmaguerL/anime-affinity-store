@@ -30,11 +30,13 @@
       <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <form action="procesar_login.php" method="POST">
+    <form action="procesar_login.php" method="POST" class="needs-validation" novalidate>
       <div class="mb-3">
-        <label for="usuario" class="form-label">Correo</label>
+        <label for="usuario" class="form-label">Correo Electrónico</label>
         <input type="text" name="usuario" id="usuario" class="form-control" required>
+        <div class="invalid-feedback">Ingresa un correo electrónico.</div>
       </div>
+
       <div class="mb-3">
         <label for="contrasena" class="form-label">Contraseña</label>
         <div class="input-group">
@@ -42,6 +44,7 @@
           <button class="btn btn-outline-secondary" type="button" id="togglePassword">
             <i class="bi bi-eye" id="iconPassword"></i>
           </button>
+          <div class="invalid-feedback">Ingresa tu contraseña.</div>
         </div>
       </div>
       <div class="d-grid">
@@ -49,6 +52,26 @@
       </div>
     </form>
   </div>
+
+  <!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Validación de formulario -->
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
 
   <script>
   document.getElementById('togglePassword').addEventListener('click', function () {

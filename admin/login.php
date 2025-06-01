@@ -31,7 +31,7 @@
 
     <form action="procesar_login.php" method="POST">
       <div class="mb-3">
-        <label for="usuario" class="form-label">Usuario</label>
+        <label for="usuario" class="form-label">Correo</label>
         <input type="text" name="usuario" id="usuario" class="form-control" required>
       </div>
       <div class="mb-3">

@@ -370,6 +370,7 @@ section.container {
   overflow: hidden;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
   max-width: 400px; /* o prueba 380px, 360px, según veas cómo queda */
+  max-height: 632px;
   margin: 0 auto;
   margin-bottom: 2rem;
 }

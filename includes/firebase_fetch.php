@@ -4,6 +4,12 @@ $keyFilePath = __DIR__ . '/../firebase/affinityanimestore-firebase-adminsdk-fbsv
 $projectId = 'affinityanimestore';
 $accessToken = getAccessToken($keyFilePath);
 
+// Obtener la API Key de Firebase
+function obtenerApiKeyFirebase($keyFilePath) {
+    $jsonKey = json_decode(file_get_contents($keyFilePath), true);
+    return $jsonKey['api_key'] ?? '';
+}
+
 function getAccessToken($keyFilePath) {
     $authUrl = "https://oauth2.googleapis.com/token";
     $scopes = ["https://www.googleapis.com/auth/datastore"];

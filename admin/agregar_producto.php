@@ -46,7 +46,7 @@ $estados = [
       <div class="col-md-6 mb-3">
         <label>Nombre:</label>
         <input type="text" name="nombre" class="form-control" required>
-        <div class="invalid-feedback">Este campo es obligatorio.</div>
+        <div class="invalid-feedback">El nombre es obligatorio.</div>
       </div>
 
       <!-- Precio -->

@@ -16,8 +16,8 @@ if (!$idProducto) {
 $producto = obtenerProductoPorId($idProducto);
 if (!$producto) {
     echo "Producto no encontrado.";
-    exit;
-}
+    exit; 
+} 
 
 // Obtener las colecciones relacionadas para los select
 $categorias = obtenerCategorias();
@@ -25,7 +25,7 @@ $marcas = obtenerMarcas();
 $series = obtenerSeries();
 $escalas = obtenerEscalas();
 $estados = [
-    ['id' => 'inventario', 'nombre' => 'Disponible'],
+    ['id' => 'inventario', 'nombre' => 'En existencia'],
     ['id' => 'preventa', 'nombre' => 'Preventa'],
     ['id' => 'en-camino', 'nombre' => 'En camino'],
     ['id'=> 'sin-existencia', 'nombre'=> 'Sin existencia']
@@ -52,7 +52,7 @@ $estados = [
       <div class="col-md-6 mb-3">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" class="form-control" value="<?= htmlspecialchars($producto['nombre']) ?>" required>
-        <div class="invalid-feedback">Por favor ingresa un nombre.</div>
+        <div class="invalid-feedback">El nombre es obligatorio.</div>
       </div>
 
       <!-- Precio -->
@@ -131,7 +131,7 @@ $estados = [
         <select id="estado" name="estado" class="form-control" required>
           <option disabled selected value="">Seleccione un estado</option>
           <?php foreach ($estados as $e): ?>
-            <option value="<?= $e['id'] ?>" <?= ($producto['estado'] === $e['nombre']) ? 'selected' : '' ?>>
+            <option value="<?= $e['id'] ?>" <?= ($producto['estado'] === $e['id']) ? 'selected' : '' ?>>
               <?= htmlspecialchars($e['nombre']) ?>
             </option>
           <?php endforeach; ?>

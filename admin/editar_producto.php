@@ -170,7 +170,7 @@ $estados = [
 
     <!-- Botones -->
     <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      <button type="submit" class="btn btn-success">Guardar cambios</button>
       <a href="productos.php" class="btn btn-secondary">Cancelar</a>
     </div>
   </form>

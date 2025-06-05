@@ -59,15 +59,21 @@ if ($busqueda !== '') {
         <a href="logout.php" class="btn btn-danger">Cerrar Sesión</a>
         <!-- <a href="dashboard.php" class="btn btn-outline-secondary">← Volver</a> -->
     </div>
+    
     <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex align-items-center">
-        <form method="get" class="d-flex" style="max-width: 600px;">
-        <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($busqueda) ?>">
-        <button type="submit" class="btn btn-primary me-2">Buscar</button>
-        </form>
-        <a href="productos.php" class="btn btn-outline-secondary">← Ver desde el inicio</a>
-    </div>
-        <a href="agregar_producto.php" class="btn btn-success">+ Agregar Producto</a>
+        <div class="d-flex align-items-center">
+            <form method="get" class="d-flex" style="max-width: 600px;">
+                <input type="text" name="q" class="form-control me-2" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($busqueda) ?>">
+                <button type="submit" class="btn btn-primary me-2">Buscar</button>
+            </form>
+            <a href="productos.php" class="btn btn-outline-secondary">← Ver desde el inicio</a>
+        </div>
+
+        <!-- Agrupar estos botones en un contenedor -->
+        <div class="d-flex gap-2">
+            <a href="agregar_carrusel.php" class="btn btn-outline-dark">🎞️ Carrusel de Imágenes</a>
+            <a href="agregar_producto.php" class="btn btn-success">+ Agregar Producto</a>
+        </div>
     </div>
 
     <div class="table-responsive">

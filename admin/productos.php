@@ -102,8 +102,8 @@ if ($busqueda !== '') {
                         ?>
                     </td>
                     <td class="text-center"><?= date('Y-m-d', strtotime($producto['fecha_subida'] ?? 'now')) ?></td>
-                    <td>
-                        <div class="d-flex gap-2">
+                    <td class="text-center align-middle">
+                        <div class="d-flex justify-content-center gap-2">
                             <a href="editar_producto.php?id=<?= urlencode($producto['id']) ?>" class="btn btn-sm btn-warning">Editar</a>
                             <button class="btn btn-sm btn-danger btn-confirmar-eliminar"
                                 data-id="<?= $producto['id'] ?>" 

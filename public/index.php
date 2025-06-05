@@ -7,6 +7,7 @@
 
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
+
 </head>
 <body>
 <!-- Barra de navegación del sitio -->
@@ -17,27 +18,45 @@
 require __DIR__ . '/../includes/firebase_fetch.php';
 $recientes = obtenerProductosInventario();
 $preventas = obtenerProductosPreventa();
+$carrusel = obtenerImagenesCarrusel();
+//echo "<pre>";
+//print_r($carrusel);
+//echo "</pre>";
 ?>
 
-<!-- Carrusel fuera de container -->
-<div id="carouselExampleIndicators" class="carousel slide debug-border" data-bs-ride="carousel">
+<!-- Carrusel de imágenes -->
+<?php if (!empty($carrusel)): ?>
+<?php if (!empty($carrusel)): ?>
+<div id="carouselExampleIndicators" class="carousel slide mb-5" data-bs-ride="carousel">
   <div class="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+    <?php foreach ($carrusel as $index => $img): ?>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
+    <?php endforeach; ?>
   </div>
   <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="assets/img/banner1.jpg" class="d-block w-100" alt="Figura destacada 1">
-    </div>
-    <div class="carousel-item">
-      <img src="assets/img/banner2.jpg" class="d-block w-100" alt="Figura destacada 2">
-    </div>
-    <div class="carousel-item">
-      <img src="assets/img/banner3.jpg" class="d-block w-100" alt="Figura destacada 3">
-    </div>
+    <?php foreach ($carrusel as $index => $img): ?>
+      <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+        <img src="<?= htmlspecialchars($img['url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($img['titulo'] ?? 'Imagen del carrusel') ?>">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+          <h5><?= htmlspecialchars($img['titulo']) ?></h5>
+        </div>
+      </div>
+    <?php endforeach; ?>
   </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
 </div>
+<?php endif; ?>
+
+<?php else: ?>
+  ⚠️ No se cargó el carrusel
+<?php endif; ?>
 
 <!-- Sección de Productos Recientes -->
 <section class="container mb-5">
@@ -97,6 +116,9 @@ $datosParaJS = array_map(function($p) {
 
 <!-- Footer del sitio -->
 <?php include('footer.php'); ?>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

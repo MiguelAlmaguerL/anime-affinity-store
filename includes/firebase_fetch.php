@@ -50,6 +50,69 @@ function getAccessToken($keyFilePath) {
     return $data['access_token'];
 }
 
+// Función para obtener las imágenes del carrusel desde Firestore
+function obtenerImagenesCarrusel() {
+    global $accessToken, $projectId;
+
+    if (empty($projectId) || empty($accessToken)) {
+        echo "ERROR: Falta projectId o accessToken.";
+        return [];
+    }
+
+    $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents:runQuery";
+
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $body = json_encode([
+        "structuredQuery" => [
+            "from" => [["collectionId" => "carrusel_img"]],
+            "where" => [
+                "fieldFilter" => [
+                    "field" => ["fieldPath" => "activo"],
+                    "op" => "EQUAL",
+                    "value" => ["booleanValue" => true]
+                ]
+            ],
+            "orderBy" => [[
+                "field" => ["fieldPath" => "orden"],
+                "direction" => "ASCENDING"
+            ]],
+            "limit" => 50
+        ]
+    ]);
+
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $entries = json_decode($response, true);
+    $imagenes = [];
+
+    foreach ($entries as $entry) {
+        if (!isset($entry['document']['fields'])) continue;
+
+        $fields = $entry['document']['fields'];
+        $imagenes[] = [
+            'url' => $fields['url']['stringValue'] ?? '',
+            'titulo' => $fields['titulo']['stringValue'] ?? '',
+            'orden' => (int)($fields['orden']['integerValue'] ?? 0),
+            'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+        ];
+    }
+    return $imagenes;
+}
+
+
 //Función para traer productos con estado de 'Inventario' o 'Existencia' -- SOLO PARA PAGINA DE INICIO
 function obtenerProductosInventario($limite = 4) {
     global $accessToken, $projectId;

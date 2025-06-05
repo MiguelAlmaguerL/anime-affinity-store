@@ -30,6 +30,7 @@ $estados = [
   <title>Agregar Producto</title>
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-light">
 <div class="container mt-5">
   <?php if ($errorMensaje): ?>

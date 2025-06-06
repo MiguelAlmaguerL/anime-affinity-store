@@ -5,6 +5,7 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -39,45 +40,47 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
         </div>
     <?php endif; ?>
 
-    
     <form action="procesar_agregar_carrusel.php" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-    <!-- Título -->    
-    <div class="mb-3">
+        <!-- Título -->    
+        <div class="mb-3">
             <label for="titulo" class="form-label">Título</label>
             <input type="text" name="titulo" id="titulo" class="form-control" required>
             <div class="invalid-feedback">Ingrese un título para la imagen.</div>
         </div>
 
-        <!-- Orden -->
-        <div class="mb-3">
-            <label for="orden" class="form-label">Orden</label>
-            <input type="number" name="orden" id="orden" class="form-control" min="0" required>
-            <div class="invalid-feedback">Ingrese el orden de aparición en el carrusel.</div>
-        </div>
+        <!-- Orden + Activo en una misma fila -->
+        <div class="row mb-3">
+            <!-- Campo Orden -->
+            <div class="col-md-6">
+                <label for="orden" class="form-label">Orden</label>
+                <input type="number" name="orden" id="orden" class="form-control" min="1" required pattern="\d+" title="Ingrese un número entero mayor a 0">
+                <div class="invalid-feedback">El orden de aparición debe ser un número válido (mayor a 0).</div>
+            </div>
 
-        <!-- Esatus de la imagen -->
-        <div class="mb-3">
-            <label for="activo" class="form-label">¿La imagen estara activa en el carrusel?</label>
-            <select name="activo" id="activo" class="form-select" required>
-                <option value="" selected disabled>Seleccione una opción</option>
-                <option value="true">Sí</option>
-                <option value="false">No</option>
-            </select>
-            <div class="invalid-feedback">Seleccione si la imagen estará activa en el carrusel.</div>
+            <!-- Campo Activo (Podria cambiar esta lista de opciones por un "Checkbox")-->
+            <div class="col-md-6">
+                <label for="activo" class="form-label">¿La imagen estará activa en el carrusel?</label>
+                <select name="activo" id="activo" class="form-select" required>
+                    <option value="" selected disabled>Seleccione una opción</option>
+                    <option value="true">Sí</option>
+                    <option value="false">No</option>
+                </select>
+                <div class="invalid-feedback">Seleccione si la imagen estará activa en el carrusel.</div>
+            </div>
         </div>
 
         <!-- Selección de imagen -->
         <div class="mb-3">
             <label for="imagen" class="form-label">Seleccionar Imagen</label>
             <input class="form-control" type="file" name="imagen" id="imagen" accept="image/*" required>
-            <div class="invalid-feedback">Debe seleccionar una imagen válida.</div>
+            <div class="invalid-feedback">Es obligatorio subir una imagen o una imagen válida.</div>
         </div>
 
         <!-- Previsualización de la imagen -->
         <div class="mb-3" id="preview-container" style="display: none;">
             <div class="img-wrapper">
                 <img id="preview-img" src="#" alt="Previsualización" class="preview-img">
-                <!-- Botón flotante tipo ❌ -->
+                <!-- Botón flotante para eliminar la imagen -->
                 <button type="button" id="remove-img-btn" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" title="Eliminar imagen">
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -86,34 +89,45 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 
         <!-- Botones de acción -->
         <button type="submit" class="btn btn-success">Agregar al Carrusel</button>
-        <a href="productos.php" class="btn btn-secondary ms-2">Cancelar</a>
+        <a href="carrusel.php" class="btn btn-secondary ms-2">Cancelar</a>
     </form>
 </div>
 
 <!-- Validación de formulario -->
 <script>
-    (function () {
-        'use strict'
-        const forms = document.querySelectorAll('.needs-validation')
-        Array.from(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })()
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('.needs-validation');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Detenemos siempre para hacer validaciones
+            event.stopPropagation();
+
+            const ordenInput = document.getElementById('orden');
+            const ordenValue = parseInt(ordenInput.value, 10);
+
+            // Validación personalizada de "orden"
+            if (!Number.isInteger(ordenValue) || ordenValue <= 0) {
+                ordenInput.classList.add('is-invalid');
+            } else {
+                ordenInput.classList.remove('is-invalid');
+            }
+
+            // Aplica clase de Bootstrap para mostrar feedback en todos los campos
+            form.classList.add('was-validated');
+
+            // Si todos los campos son válidos (incluyendo que "orden" no tenga la clase is-invalid), permite el envío
+            if (form.checkValidity() && !ordenInput.classList.contains('is-invalid')) {
+                form.submit();
+            }
+        });
+    });
 </script>
 
 <!-- Previsualización de imagen -->
 <script>
     function clearFileInput() {
         const fileInput = document.getElementById('imagen');
-        fileInput.value = ''; // Resetea directamente el input file (esto sí funciona)
-
-        // También ocultamos la previsualización
+        fileInput.value = '';
         document.getElementById('preview-img').src = '#';
         document.getElementById('preview-container').style.display = 'none';
     }
@@ -137,14 +151,9 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('imagen').addEventListener('change', handleImageChange);
-
-        document.getElementById('remove-img-btn').addEventListener('click', function () {
-            clearFileInput();
-        });
+        document.getElementById('remove-img-btn').addEventListener('click', clearFileInput);
     });
 </script>
-
-
 
 </body>
 </html>

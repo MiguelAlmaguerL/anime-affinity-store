@@ -14,6 +14,52 @@ $orden = intval($_POST['orden'] ?? 0);
 $fechaSubida = date('c'); // ISO 8601
 $activo = isset($_POST['activo']) && $_POST['activo'] === 'true' ? true : false;
 
+// Validar el campo de "orden"
+if (!filter_var($orden, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
+    $_SESSION['error_carrusel'] = '❌ El campo "Orden" debe ser un número entero mayor que cero.';
+    header('Location: agregar_carrusel.php');
+    exit;
+}
+
+// Verificar que el campo "orden" no esté duplicado
+$ordenRepetidoUrl = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents:runQuery";
+$consultaOrden = [
+    'structuredQuery' => [
+        'from' => [['collectionId' => 'carrusel_img']],
+        'where' => [
+            'fieldFilter' => [
+                'field' => ['fieldPath' => 'orden'],
+                'op' => 'EQUAL',
+                'value' => ['integerValue' => $orden]
+            ]
+        ],
+        'limit' => 1
+    ]
+];
+
+$ordenContext = stream_context_create([
+    'http' => [
+        'method' => 'POST',
+        'header' => implode("\r\n", [
+            "Authorization: Bearer $accessToken",
+            "Content-Type: application/json"
+        ]),
+        'content' => json_encode($consultaOrden)
+    ]
+]);
+
+$ordenResponse = file_get_contents($ordenRepetidoUrl, false, $ordenContext);
+$ordenData = json_decode($ordenResponse, true);
+
+// Verificamos si existe al menos un resultado con el mismo "orden"
+foreach ($ordenData as $entry) {
+    if (isset($entry['document'])) {
+        $_SESSION['error_carrusel'] = "❌ Ya existe una imagen con ese número de orden. Por favor, asigne uno diferente e intente nuevamente.";
+        header('Location: agregar_carrusel.php');
+        exit;
+    }
+}
+
 // Subir imagen a Cloudinary
 $imagenUrl = '';
 
@@ -93,6 +139,6 @@ if ($response === false) {
 }
 
 // Redirigir con éxito
-header('Location: productos.php?agregado=1');
+header('Location: carrusel.php?agregado=1');
 exit;
 ?>

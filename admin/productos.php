@@ -54,6 +54,7 @@ if ($busqueda !== '') {
         </div>
         <?php unset($_SESSION['error_eliminar']); ?>
         <?php endif; ?>
+        
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestión de Productos</h2>
         <a href="logout.php" class="btn btn-danger">Cerrar Sesión</a>
@@ -69,9 +70,8 @@ if ($busqueda !== '') {
             <a href="productos.php" class="btn btn-outline-secondary">← Ver desde el inicio</a>
         </div>
 
-        <!-- Agrupar estos botones en un contenedor -->
         <div class="d-flex gap-2">
-            <a href="agregar_carrusel.php" class="btn btn-outline-dark">🎞️ Carrusel de Imágenes</a>
+            <a href="carrusel.php" class="btn btn-outline-dark">🎞️ Carrusel de Imágenes</a>
             <a href="agregar_producto.php" class="btn btn-success">+ Agregar Producto</a>
         </div>
     </div>

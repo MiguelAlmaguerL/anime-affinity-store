@@ -80,7 +80,7 @@ function obtenerImagenesCarrusel() {
                 "field" => ["fieldPath" => "orden"],
                 "direction" => "ASCENDING"
             ]],
-            "limit" => 50
+            "limit" => 250
         ]
     ]);
 
@@ -112,6 +112,66 @@ function obtenerImagenesCarrusel() {
     return $imagenes;
 }
 
+// Función para obtener TODOS los documentos del carrusel, sin filtrar por "activo"
+function obtenerTodosLosCarrusel() {
+    global $accessToken, $projectId;
+
+    if (empty($projectId) || empty($accessToken)) {
+        echo "ERROR: Falta projectId o accessToken.";
+        return [];
+    }
+
+    $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents:runQuery";
+
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $body = json_encode([
+        "structuredQuery" => [
+            "from" => [["collectionId" => "carrusel_img"]],
+            "orderBy" => [[
+                "field" => ["fieldPath" => "orden"],
+                "direction" => "ASCENDING"
+            ]],
+            "limit" => 250
+        ]
+    ]);
+
+    $opts = [
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return [];
+
+    $entries = json_decode($response, true);
+    $imagenes = [];
+
+    foreach ($entries as $entry) {
+        if (!isset($entry['document']['fields'])) continue;
+
+        $docName = $entry['document']['name'] ?? '';
+        $docId = basename($docName);
+
+        $fields = $entry['document']['fields'];
+        $imagenes[] = [
+            'id' => $docId,
+            'url' => $fields['url']['stringValue'] ?? '',
+            'titulo' => $fields['titulo']['stringValue'] ?? '',
+            'orden' => (int)($fields['orden']['integerValue'] ?? 0),
+            'activo' => isset($fields['activo']['booleanValue']) ? $fields['activo']['booleanValue'] : null,
+            'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+        ];
+    }
+
+    return $imagenes;
+}
 
 //Función para traer productos con estado de 'Inventario' o 'Existencia' -- SOLO PARA PAGINA DE INICIO
 function obtenerProductosInventario($limite = 4) {

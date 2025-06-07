@@ -13,24 +13,42 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
     <title>Agregar Imagen al Carrusel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
-        .img-wrapper {
-            max-width: 300px;
-            position: relative;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-        }
+    .img-wrapper {
+        max-width: 250px;
+        position: relative;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  
+    .preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-        .preview-img {
-            max-height: 250px;
-            object-fit: contain;
-            width: 100%;
-        }
+    #preview-container {
+        display: none;
+    }
+
+    #remove-img-btn {
+        background-color: rgba(220, 53, 69, 1);
+        border: none;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #fff;
+    }
     </style>
 </head>
-<body class="bg-light">
 
+<body class="bg-light">
 <div class="container py-5">
     <h2 class="mb-4">Agregar Imagen al Carrusel</h2>
 
@@ -71,7 +89,7 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 
         <!-- Selección de imagen -->
         <div class="mb-3">
-            <label for="imagen" class="form-label">Seleccionar Imagen</label>
+            <label for="imagen" class="form-label">Seleccionar Imagen (⚠️ Se recomienda usar imagenes de 1600x500 px o 1920x600 px ⚠️)</label>
             <input class="form-control" type="file" name="imagen" id="imagen" accept="image/*" required>
             <div class="invalid-feedback">Es obligatorio subir una imagen o una imagen válida.</div>
         </div>
@@ -81,7 +99,7 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
             <div class="img-wrapper">
                 <img id="preview-img" src="#" alt="Previsualización" class="preview-img">
                 <!-- Botón flotante para eliminar la imagen -->
-                <button type="button" id="remove-img-btn" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" title="Eliminar imagen">
+                <button type="button" id="remove-img-btn" class="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-1" title="Eliminar imagen">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
@@ -125,34 +143,34 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 
 <!-- Previsualización de imagen -->
 <script>
-    function clearFileInput() {
-        const fileInput = document.getElementById('imagen');
-        fileInput.value = '';
-        document.getElementById('preview-img').src = '#';
-        document.getElementById('preview-container').style.display = 'none';
+  function clearFileInput() {
+    const fileInput = document.getElementById('imagen');
+    fileInput.value = '';
+    document.getElementById('preview-img').src = '#';
+    document.getElementById('preview-container').style.display = 'none';
+}
+
+function handleImageChange(event) {
+    const file = event.target.files[0];
+    const previewContainer = document.getElementById('preview-container');
+    const previewImg = document.getElementById('preview-img');
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImg.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        clearFileInput();
     }
+}
 
-    function handleImageChange(event) {
-        const file = event.target.files[0];
-        const previewContainer = document.getElementById('preview-container');
-        const previewImg = document.getElementById('preview-img');
-
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImg.src = e.target.result;
-                previewContainer.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            clearFileInput();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('imagen').addEventListener('change', handleImageChange);
-        document.getElementById('remove-img-btn').addEventListener('click', clearFileInput);
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('imagen').addEventListener('change', handleImageChange);
+    document.getElementById('remove-img-btn').addEventListener('click', clearFileInput);
+});
 </script>
 
 </body>

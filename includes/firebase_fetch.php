@@ -173,6 +173,47 @@ function obtenerTodosLosCarrusel() {
     return $imagenes;
 }
 
+// Función para obtener un carrusel por su ID
+function obtenerCarruselPorId($id) {
+    global $accessToken, $projectId;
+
+    if (empty($projectId) || empty($accessToken)) {
+        echo "ERROR: Falta projectId o accessToken.";
+        return null;
+    }
+
+    $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/carrusel_img/$id";
+
+    $headers = [
+        "Authorization: Bearer $accessToken",
+        "Content-Type: application/json"
+    ];
+
+    $opts = [
+        'http' => [
+            'method' => 'GET',
+            'header' => implode("\r\n", $headers)
+        ]
+    ];
+
+    $response = @file_get_contents($url, false, stream_context_create($opts));
+    if ($response === false) return null;
+
+    $data = json_decode($response, true);
+    if (!isset($data['fields'])) return null;
+
+    $fields = $data['fields'];
+
+    return [
+        'id' => $id,
+        'titulo' => $fields['titulo']['stringValue'] ?? '',
+        'imagen' => $fields['url']['stringValue'] ?? '',
+        'orden' => (int)($fields['orden']['integerValue'] ?? 0),
+        'activo' => isset($fields['activo']['booleanValue']) ? $fields['activo']['booleanValue'] : null,
+        'fecha_subida' => $fields['fecha_subida']['timestampValue'] ?? ''
+    ];
+}
+
 //Función para traer productos con estado de 'Inventario' o 'Existencia' -- SOLO PARA PAGINA DE INICIO
 function obtenerProductosInventario($limite = 4) {
     global $accessToken, $projectId;

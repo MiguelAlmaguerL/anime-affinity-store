@@ -10,16 +10,19 @@ if (!isset($_SESSION['admin_logueado']) || $_SESSION['admin_logueado'] !== true)
 
 // Obtener campos del formulario
 $titulo = $_POST['titulo'] ?? '';
-$orden = intval($_POST['orden'] ?? 0);
 $fechaSubida = date('c'); // ISO 8601
 $activo = isset($_POST['activo']) && $_POST['activo'] === 'true' ? true : false;
+$orden_raw = $_POST['orden'] ?? '';
+$orden = trim($orden_raw);
 
-// Validar el campo de "orden"
+// Validar el campo "Orden"
 if (!filter_var($orden, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
     $_SESSION['error_carrusel'] = '❌ El campo "Orden" debe ser un número entero mayor que cero.';
     header('Location: agregar_carrusel.php');
     exit;
 }
+
+$orden = (int) $orden; // Se convierte a entero limpio
 
 // Verificar que el campo "orden" no esté duplicado
 $ordenRepetidoUrl = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents:runQuery";

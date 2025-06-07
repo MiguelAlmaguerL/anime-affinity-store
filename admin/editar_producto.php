@@ -37,10 +37,45 @@ $estados = [
 <head>
   <meta charset="UTF-8">
   <title>Editar Producto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+  
+  <style>
+    .img-wrapper {
+      width: 150px;
+      position: relative;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-img-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background-color: rgba(220, 53, 69, 1);
+      border: none;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
 <div class="container mt-5">
   <h2 class="mb-4">Editar Producto</h2>
 
@@ -148,12 +183,13 @@ $estados = [
 
       <!-- Imágenes actuales -->
       <div class="col-12 mb-3">
-        <label>Imágenes actuales:</label>
-        <div id="imagenes-actuales" class="d-flex flex-wrap gap-2">
+        <div id="imagenes-actuales" class="d-flex flex-wrap gap-3">
           <?php foreach ($producto['imagenes'] as $url): ?>
-            <div class="imagen-previa position-relative" data-url="<?= $url ?>">
-              <img src="<?= $url ?>" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
-              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 eliminar-imagen" title="Eliminar imagen">&times;</button>
+            <div class="img-wrapper imagen-previa" data-url="<?= $url ?>">
+              <img src="<?= $url ?>" class="preview-img">
+              <button type="button" class="remove-img-btn eliminar-imagen" title="Eliminar imagen">
+                <i class="bi bi-x-lg"></i>
+              </button>
               <input type="hidden" name="imagenes_anteriores[]" value="<?= $url ?>">
             </div>
           <?php endforeach; ?>
@@ -164,7 +200,7 @@ $estados = [
       <div class="col-12 mb-3">
         <label for="imagenes">Nuevas imágenes (opcional):</label>
         <input type="file" id="imagenes" name="imagenes[]" class="form-control" accept="image/*" multiple>
-        <div class="d-flex flex-wrap mt-2" id="preview-nuevas-imagenes"></div>
+        <div id="preview-nuevas-imagenes" class="d-flex flex-wrap gap-3 mt-3"></div>
       </div>
     </div>
 
@@ -179,8 +215,8 @@ $estados = [
 <!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Validación de formulario con Bootstrap -->	
 <script>
-  // Validación Bootstrap
   (() => {
     'use strict';
     const form = document.getElementById('formProducto');
@@ -214,13 +250,15 @@ $estados = [
       imagen.remove();
     });
   });
+</script>
 
-  // Previsualizar imágenes nuevas + permitir eliminarlas
-  const inputImagenes = document.getElementById('imagenes');
+<!-- Previsualización de nuevas imágenes -->
+<script>
+    const inputImagenes = document.getElementById('imagenes');
   const preview = document.getElementById('preview-nuevas-imagenes');
 
   inputImagenes.addEventListener('change', function () {
-    preview.innerHTML = ''; // Limpiar previas
+    preview.innerHTML = '';
     const dt = new DataTransfer();
 
     Array.from(inputImagenes.files).forEach((file, index) => {
@@ -228,25 +266,22 @@ $estados = [
 
       reader.onload = function (e) {
         const wrapper = document.createElement('div');
-        wrapper.classList.add('position-relative', 'me-2', 'mb-2');
+        wrapper.classList.add('img-wrapper');
 
         const img = document.createElement('img');
         img.src = e.target.result;
-        img.classList.add('img-thumbnail');
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.objectFit = 'cover';
+        img.className = 'preview-img';
 
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.innerHTML = '&times;';
-        btn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0 eliminar-nueva-imagen';
+        btn.className = 'remove-img-btn';
+        btn.innerHTML = '<i class="bi bi-x-lg"></i>';
         btn.title = 'Eliminar imagen';
 
         btn.addEventListener('click', () => {
           wrapper.remove();
 
-          // Reconstruir los archivos seleccionados sin este
+          // Quitar del DataTransfer
           const nuevaLista = new DataTransfer();
           Array.from(dt.files).forEach((f, i) => {
             if (i !== index) nuevaLista.items.add(f);
@@ -264,7 +299,6 @@ $estados = [
       dt.items.add(file);
     });
 
-    // Asignar nueva lista al input
     inputImagenes.files = dt.files;
   });
 </script>

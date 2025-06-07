@@ -155,6 +155,7 @@ $producto = [
     ]
 ];
 
+// Obtener access token (en caso que tu archivo firebase_fetch.php no lo haga automáticamente)
 $accessToken = getAccessToken(__DIR__ . '/../firebase/affinityanimestore-firebase-adminsdk-fbsvc-7a1a2b791b.json');
 $url = "https://firestore.googleapis.com/v1/projects/{$projectId}/databases/(default)/documents/productos/{$idProducto}?updateMask.fieldPaths=nombre&updateMask.fieldPaths=descripcion&updateMask.fieldPaths=precio&updateMask.fieldPaths=categoriasID&updateMask.fieldPaths=marcasID&updateMask.fieldPaths=seriesID&updateMask.fieldPaths=escalasID&updateMask.fieldPaths=estadosID&updateMask.fieldPaths=imagenes&updateMask.fieldPaths=fecha_lanzamiento&updateMask.fieldPaths=fecha_subida&updateMask.fieldPaths=slug";
 

@@ -29,6 +29,7 @@ $estados = [
   <meta charset="UTF-8">
   <title>Agregar Producto</title>
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
@@ -269,7 +270,6 @@ $estados = [
   let archivosSeleccionados = [];
 
   inputImagenes.addEventListener("change", function () {
-    // Actualizamos el arreglo con los nuevos archivos
     archivosSeleccionados = Array.from(inputImagenes.files);
     actualizarPrevisualizacion();
   });
@@ -283,26 +283,35 @@ $estados = [
       const reader = new FileReader();
       reader.onload = function (e) {
         const contenedor = document.createElement("div");
-        contenedor.classList.add("position-relative");
+        contenedor.classList.add("position-relative", "rounded", "border", "shadow-sm", "overflow-hidden");
+        contenedor.style.width = "120px";
+        contenedor.style.height = "120px";
 
         const img = document.createElement("img");
         img.src = e.target.result;
         img.alt = "Vista previa";
-        img.style.width = "100px";
-        img.style.height = "100px";
+        img.classList.add("img-fluid");
+        img.style.width = "100%";
+        img.style.height = "100%";
         img.style.objectFit = "cover";
-        img.classList.add("rounded", "shadow", "img-thumbnail");
 
         const botonEliminar = document.createElement("button");
         botonEliminar.type = "button";
-        botonEliminar.innerHTML = "&times;";
+        botonEliminar.innerHTML = '<i class="bi bi-x-lg"></i>';
         botonEliminar.title = "Eliminar imagen";
-        botonEliminar.classList.add("btn", "btn-sm", "btn-danger", "position-absolute", "top-0", "end-0");
+        botonEliminar.classList.add("btn", "btn-danger", "btn-sm", "rounded-circle", "position-absolute", "top-0", "end-0", "m-1");
+        botonEliminar.style.width = "24px";
+        botonEliminar.style.height = "24px";
+        botonEliminar.style.display = "flex";
+        botonEliminar.style.alignItems = "center";
+        botonEliminar.style.justifyContent = "center";
+        botonEliminar.style.boxShadow = "0 0 5px rgba(0,0,0,0.3)";
+        botonEliminar.style.fontSize = "14px";
 
         botonEliminar.addEventListener("click", () => {
-          archivosSeleccionados.splice(index, 1); // Elimina del array
-          actualizarInputFile();                  // Actualiza el input file real
-          actualizarPrevisualizacion();           // Refresca vista previa
+          archivosSeleccionados.splice(index, 1);
+          actualizarInputFile();
+          actualizarPrevisualizacion();
         });
 
         contenedor.appendChild(img);

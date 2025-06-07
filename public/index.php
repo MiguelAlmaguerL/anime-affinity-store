@@ -4,11 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anime Affinity Store</title>
-
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
+  <style>
+    .carousel-item img {
+      width: 100%;
+      height: 500px;
+      object-fit: cover; /* Se recomienda usar imagenes de 1600x500 px o algo proporcional, como 1920x600, 1200x400, etc. */
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-item:hover img {
+      transform: scale(1.02);
+    }
+
+    .carousel-caption {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 15px;
+      animation: fadeInUp 0.7s ease-in-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .carousel-indicators [data-bs-target] {
+      width: 30px;
+      height: 5px;
+      border-radius: 10px;
+      background-color: #ccc;
+      margin: 0 4px;
+      transition: all 0.3s;
+    }
+
+    .carousel-indicators .active {
+      background-color: #ff4081;
+      width: 40px;
+    }
+
+    @media (max-width: 576px) {
+      .carousel-caption {
+        font-size: 0.9rem;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        padding: 0.5rem;
+      }
+
+      .carousel-caption h5 {
+        font-size: 1rem;
+      }
+    }
+
+    #toggleCarousel {
+      z-index: 10;
+    }
+  </style>
 </head>
+
 <body>
 <!-- Barra de navegación del sitio -->
 <?php include('navbar.php'); ?>
@@ -19,41 +85,49 @@ require __DIR__ . '/../includes/firebase_fetch.php';
 $recientes = obtenerProductosInventario();
 $preventas = obtenerProductosPreventa();
 $carrusel = obtenerImagenesCarrusel();
-//echo "<pre>";
-//print_r($carrusel);
-//echo "</pre>";
 ?>
 
 <!-- Carrusel de imágenes -->
 <?php if (!empty($carrusel)): ?>
-<?php if (!empty($carrusel)): ?>
-<div id="carouselExampleIndicators" class="carousel slide mb-5" data-bs-ride="carousel">
-  <div class="carousel-indicators">
-    <?php foreach ($carrusel as $index => $img): ?>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
-    <?php endforeach; ?>
-  </div>
-  <div class="carousel-inner">
-    <?php foreach ($carrusel as $index => $img): ?>
-      <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-        <img src="<?= htmlspecialchars($img['url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($img['titulo'] ?? 'Imagen del carrusel') ?>">
-        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
-          <h5><?= htmlspecialchars($img['titulo']) ?></h5>
-        </div>
-      </div>
-    <?php endforeach; ?>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon"></span>
-    <span class="visually-hidden">Anterior</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-    <span class="carousel-control-next-icon"></span>
-    <span class="visually-hidden">Siguiente</span>
-  </button>
-</div>
-<?php endif; ?>
+  <div id="carouselExampleIndicators" class="carousel slide carousel-fade mb-5 position-relative" data-bs-ride="carousel">
+    
+    <!-- Botón de pausa/play con íconos -->
+    <button id="toggleCarousel" class="btn btn-sm btn-light position-absolute top-0 end-0 m-3">
+      <i id="toggleIcon" class="bi bi-pause-fill"></i>
+    </button>
 
+    <!-- Indicadores -->
+    <div class="carousel-indicators">
+      <?php foreach ($carrusel as $index => $img): ?>
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<?= $index ?>" class="<?= $index === 0 ? 'active' : '' ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>"></button>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- Imágenes -->
+    <div class="carousel-inner">
+      <?php foreach ($carrusel as $index => $img): ?>
+        <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+          <img src="<?= htmlspecialchars($img['url']) ?>" class="d-block w-100" alt="<?= htmlspecialchars($img['titulo'] ?? 'Imagen del carrusel') ?>">
+          <div class="carousel-caption d-block">
+            <h5><?= htmlspecialchars($img['titulo']) ?></h5>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- Controles prev/next -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon d-none"></span>
+      <i class="bi bi-chevron-left fs-1 text-light"></i>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon d-none"></span>
+      <i class="bi bi-chevron-right fs-1 text-light"></i>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>
 <?php else: ?>
   ⚠️ No se cargó el carrusel
 <?php endif; ?>
@@ -119,6 +193,26 @@ $datosParaJS = array_map(function($p) {
 
 <!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script de pausa/play -->
+<script>
+  const carousel = document.querySelector('#carouselExampleIndicators');
+  const toggleBtn = document.querySelector('#toggleCarousel');
+  const toggleIcon = document.querySelector('#toggleIcon');
+  let isPaused = false;
+  const bsCarousel = new bootstrap.Carousel(carousel);
+
+  toggleBtn.addEventListener('click', () => {
+    if (isPaused) {
+      bsCarousel.cycle();
+      toggleIcon.className = 'bi bi-pause-fill';
+    } else {
+      bsCarousel.pause();
+      toggleIcon.className = 'bi bi-play-fill';
+    }
+    isPaused = !isPaused;
+  });
+</script>
 
 </body>
 </html>

@@ -92,7 +92,7 @@ $escalas    = obtenerEscalas();
   <h2 class="text-center mb-5">Todos los Productos</h2>
 
   <!-- Botón para abrir filtros en modo móvil -->
-<div class="d-block d-md-none text-center mb-4">
+<div class="d-block d-lg-none text-center mb-4">
   <button class="btn btn-danger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
     Filtrar Productos
   </button>
@@ -104,9 +104,9 @@ $escalas    = obtenerEscalas();
     <?php include('filtros-sidebar.php'); ?>
 
     <!-- Columna de productos -->
-    <div class="col-md-9">
+    <div class="col-12 col-lg-9">
       <?php if (!empty($productos)) : ?>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 justify-content-center">
           <!-- Más productos... -->
           <?php foreach ($productos as $producto): ?>
             <div class="col">

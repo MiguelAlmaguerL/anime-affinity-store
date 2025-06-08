@@ -72,6 +72,21 @@
     #toggleCarousel {
       z-index: 10;
     }
+
+    .icono-ajustado {
+      width: 80px; /* Ajusta el tamaño que prefieras */
+      height: 80px; /* Igual para todos */
+      object-fit: contain; /* Mantiene proporción sin recortar */
+      
+      @media (max-width: 767px) {
+        .bloques-beneficio {
+        flex-direction: column !important; /* Se ponen en vertical */
+        align-items: center !important; /* Centrar horizontalmente */
+        gap: 6rem; /* Espacio vertical entre los bloques */
+
+  }
+}
+}
   </style>
 </head>
 
@@ -132,6 +147,25 @@ $carrusel = obtenerImagenesCarrusel();
   ⚠️ No se cargó el carrusel
 <?php endif; ?>
 
+<!-- Sección de envío nacional-->
+<section class="container my-5">
+  <div class="d-flex justify-content-center align-items-center flex-column flex-md-row bloques-beneficio">
+    
+    <!-- Bloque de Envíos -->
+    <div class="d-flex flex-column align-items-center text-center mb-5 mb-md-0">
+      <img src="assets/icons/envio.png" alt="Envíos a todo México" class="mb-2 icono-ajustado">
+      <h4 class="m-0">¡Envíos a todo México!</h4>
+    </div>
+    
+    <!-- Bloque de Pagos Seguros -->
+    <div class="d-flex flex-column align-items-center text-center mx-4">
+      <img src="assets/icons/pago.png" alt="Pagos Seguros" class="mb-2 icono-ajustado">
+      <h4 class="m-0">¡Pagos Seguros UuU!</h4>
+    </div>
+
+  </div>
+</section>
+
 <!-- Sección de Productos Recientes -->
 <section class="container mb-5">
   <h2 class="text-center mb-5">Productos en Inventario Recientes</h2>
@@ -187,6 +221,13 @@ $datosParaJS = array_map(function($p) {
 <script>
   const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
 </script>
+
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
 
 <!-- Footer del sitio -->
 <?php include('footer.php'); ?>

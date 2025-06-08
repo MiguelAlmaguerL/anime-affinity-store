@@ -44,30 +44,32 @@ if (!$producto) {
 <div class="container py-4">
   <div class="row">
     <!-- Carrusel de imágenes -->
-    <div class="carousel-container col-lg-4 col-md-6 d-flex flex-column align-items-center">
-      <div id="carouselProducto" class="carousel slide custom-carousel" data-bs-ride="false">
-        <div class="carousel-inner">
-          <?php foreach ($producto['imagenes'] as $index => $img): ?>
-            <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-              <img src="<?= htmlspecialchars($img) ?>" class="d-block w-100" alt="Imagen del producto">
-            </div>
-          <?php endforeach; ?>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto" data-bs-slide="next">
-          <span class="carousel-control-next-icon"></span>
-        </button>
-      </div>
-
-      <!-- Miniaturas -->
-      <div class="carousel-thumbnails" style="display: flex; overflow-x: auto; gap: 8px; padding: 8px 0;">
+    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center">
+  <div class="carousel-container">
+    <div id="carouselProducto" class="carousel slide custom-carousel" data-bs-ride="false">
+      <div class="carousel-inner">
         <?php foreach ($producto['imagenes'] as $index => $img): ?>
-          <img src="<?= htmlspecialchars($img) ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>" style="flex: 0 0 auto; width: 60px; height: 60px; object-fit: cover; cursor: pointer;">
+          <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+            <img src="<?= htmlspecialchars($img) ?>" class="d-block w-100" alt="Imagen del producto">
+          </div>
         <?php endforeach; ?>
       </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselProducto" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselProducto" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
     </div>
+  </div>
+
+  <!-- Miniaturas fuera de .carousel-container -->
+  <div class="carousel-thumbnails">
+    <?php foreach ($producto['imagenes'] as $index => $img): ?>
+      <img src="<?= htmlspecialchars($img) ?>" class="thumb-img <?= $index === 0 ? 'active-thumb' : '' ?>" data-bs-target="#carouselProducto" data-bs-slide-to="<?= $index ?>">
+    <?php endforeach; ?>
+  </div>
+</div>
 
     <!-- Detalles del producto -->
     <div class="col-md-7">
@@ -119,6 +121,14 @@ $datosParaJS = array_map(function($p) {
 <script>
   const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
 </script>
+
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
+
 <?php include('footer.php'); ?>
 
 <!-- Lightbox para mostrar imagen en grande -->
@@ -126,6 +136,5 @@ $datosParaJS = array_map(function($p) {
   <span id="lightbox-close" class="lightbox-close">&times;</span>
   <img id="lightbox-img" class="lightbox-img" src="" alt="Imagen ampliada">
 </div>
-
 </body>
 </html>

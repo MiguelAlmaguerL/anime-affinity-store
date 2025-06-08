@@ -1,5 +1,5 @@
 <!-- filtros-sidebar.php -->
-  <div class="filtros-sidebar <?php if(isset($desdeOffcanvas) && $desdeOffcanvas) echo 'desde-offcanvas'; ?>">
+  <div class="filtros-sidebar col-lg-3 <?php if(isset($desdeOffcanvas) && $desdeOffcanvas) echo 'desde-offcanvas'; ?>">
     <form method="GET" action="">
       <h5>Filtrar por:</h5>
 

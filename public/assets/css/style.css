@@ -755,6 +755,17 @@ footer {
     display: none;
   }
 
+ .carousel-container,
+  .carousel-thumbnails {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
   .col-md-7 {
     margin: 0 auto;
     text-align: center;

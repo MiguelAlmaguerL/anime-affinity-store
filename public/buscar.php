@@ -82,11 +82,6 @@ $escalas    = obtenerEscalas();
 <div class="container py-4">
   <h2 class="text-center mb-5">
 <!-- Botón para abrir filtros en modo móvil -->
-<div class="d-block d-md-none text-center mb-4">
-  <button class="btn btn-danger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
-    Filtrar Productos
-  </button>
-</div>
     <?php
       if (!empty($terminoBusqueda)) {
           echo 'Resultados para: <span style="color: var(--primary-red);">' . htmlspecialchars($terminoBusqueda) . '</span>';
@@ -95,13 +90,18 @@ $escalas    = obtenerEscalas();
       }
     ?>
   </h2>
+  <div class="d-block d-lg-none text-center mb-4">
+  <button class="btn btn-danger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" aria-controls="offcanvasFiltros">
+    Filtrar Productos
+  </button>
+    </div>
 
   <div class="row">
     <?php include('filtros-sidebar.php'); ?>
 
-    <div class="col-md-9">
+    <div class="col-12 col-lg-9">
       <?php if (!empty($productosEncontrados)) : ?>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 justify-content-center">
           <?php foreach ($productosEncontrados as $producto) : ?>
             <div class="col">
               <div class="card h-100 product-card">
@@ -152,6 +152,13 @@ $datosParaJS = array_map(function($p) {
 <script>
   const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
 </script>
+
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
 
 <?php include('footer.php'); ?>
 

@@ -362,7 +362,7 @@ section.container {
   box-shadow: none; /* Opcional, para que no tenga bordes raros de focus */
 }
 
-/* ----------------------------------------- Detalles de Productos ------------------------------ */
+----------------------------------------- Detalles de Productos ------------------------------ */
 /* -------------- Carrusel de Imagenes ----------- */
 .carousel-container {
   border: 2px solid #e5e5e5;
@@ -391,8 +391,8 @@ section.container {
 }
 /* -------------- Miniaturas ---------------------- */
 .carousel-thumbnails img {
-  height: 60px;
-  width: auto;
+  height: 50px;
+  width: 50px;
   object-fit: cover;
   border-radius: 5px;
   cursor: pointer;
@@ -405,6 +405,8 @@ section.container {
 }
 
 .carousel-thumbnails {
+  max-width: 450px;
+  margin-left: -20px;
   display: flex;
   overflow-x: auto;
   gap: 10px;
@@ -412,6 +414,10 @@ section.container {
   justify-content: center;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.carousel-thumbnails img:first-child {
+  margin-left: 0 !important;
 }
 
 .carousel-thumbnails::-webkit-scrollbar{
@@ -605,11 +611,6 @@ footer {
 
 /* ------------------------------------ Responsive ---------------------------------- */
 
-/* Pantallas muy pequeñas (por ejemplo, iPhone SE) */
-@media (max-width: 375px) {
-  /* Ajustes para móviles muy pequeños */
-}
-
 /* Pantallas móviles promedio (iPhone 13, Galaxy S21, etc.) */
 @media (max-width: 425px) {
   /* Ajustes para móviles normales */
@@ -637,11 +638,6 @@ footer {
   .search-wrapper {
     right: 3rem; /* Ajustamos el input/botón de búsqueda */
   }
-}
-
-/* Phablets y móviles grandes (iPhone Plus, Galaxy Note, etc.) */
-@media (max-width: 600px) {
-  /* Ajustes para móviles más grandes o phablets */
 }
 
 /* Tablets (iPads, Galaxy Tab, etc.) */
@@ -719,12 +715,82 @@ footer {
   }
 }
 
-/* Laptops pequeñas (Chromebooks, MacBook Air) */
-@media (max-width: 1024px) {
-  /* Ajustes para laptops más pequeñas */
+/* Ajustes para tarjetas de productos en tablet (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .product-card {
+    max-width: 250px; 
+    min-height: 400px; 
+    margin-left: auto;
+    margin-right: auto;
+    
+  }
+
+  .product-title {
+  line-clamp: 3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+
+  font-size: 1rem; /* Ajusta el tamaño según te guste */
+}
+  .card-img-top {
+    height: 200px; /* O ajusta la altura si quieres que no se estire la imagen */
+  }
+
+  .product-price {
+    font-size: 1.1rem;
+  }*/
+
+  .row-cols-md-3 {
+    justify-content: center;
+  }
+
+  .btn-vermas {
+    font-size: 1rem;
+  }
+
+  .filtros-sidebar:not(.desde-offcanvas) {
+    display: none;
+  }
+
+  .col-md-7 {
+    margin: 0 auto;
+    text-align: center;
+    padding: 1rem 2rem;
+  }
+  .col-md-7 h2,
+  .col-md-7 p,
+  .col-md-7 h4,
+  .col-md-7 ul {
+    margin-bottom: 1rem;
+  }
+
+  .col-md-7 ul {
+    padding-left: 0;
+    list-style-position: inside;
+  }
+
+  .col-md-7 .btn {
+    display: inline-block;
+    min-width: 220px;
+    max-width: 100%;
+    margin: 1rem auto;
+  }
+
+  .col-md-7 .d-flex {
+    justify-content: center;
+  }
 }
 
-/* Laptops grandes o monitores */
-@media (max-width: 1440px) {
-  /* Ajustes finos para pantallas amplias */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .filtros-sidebar {
+    max-width: 240px;
+  }
+
+  .col-lg-9 {
+    flex: 0 0 calc(100% - 240px);
+    max-width: calc(100% - 240px);
+  }
 }

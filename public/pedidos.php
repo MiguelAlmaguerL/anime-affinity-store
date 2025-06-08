@@ -65,6 +65,12 @@ $datosParaJS = array_map(function($p) {
   const productoss = <?= json_encode($datosParaJS, JSON_UNESCAPED_UNICODE); ?>;
 </script>
 
+<!-- Botón flotante para ir al principio -->
+<button id="btnIrArriba" class="btn btn-dark rounded-circle" 
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        title="Ir arriba">
+  ↑
+</button>
 
 <!-- Footer del sitio -->
 <?php include('footer.php'); ?>
